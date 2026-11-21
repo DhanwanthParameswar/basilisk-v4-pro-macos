@@ -1,0 +1,84 @@
+import SwiftUI
+import ServiceManagement
+
+/// Compact controls in the menu bar (window-style MenuBarExtra).
+struct MenuBarContent: View {
+    @Environment(DeviceManager.self) private var device
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 10) {
+                MouseView(ledColors: device.effects.mapValues(\.previewColor), ledsOn: device.isConnected)
+                    .frame(width: 26, height: 42)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Basilisk V4 Pro").font(.headline)
+                    if let k = device.kind {
+                        Label(k.longName, systemImage: k.symbol).font(.caption).foregroundStyle(.secondary)
+                    } else {
+                        Text("Not connected").font(.caption).foregroundStyle(.secondary)
+                    }
+                }
+                Spacer()
+                if device.isConnected { BatteryBadge(level: device.battery, charging: device.charging).font(.callout) }
+            }
+
+            if device.supportsFullControl {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Sensitivity").font(.caption).foregroundStyle(.secondary)
+                    HStack(spacing: 6) {
+                        ForEach(Array(device.stages.enumerated()), id: \.element.id) { i, s in
+                            Button { device.selectStage(i) } label: {
+                                Text("\(s.x)").font(.caption.monospacedDigit()).frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.glass)
+                            .tint(i == device.activeStage ? .accentColor : nil)
+                        }
+                    }
+                }
+                Picker("Polling", selection: Binding(get: { device.pollingRate }, set: { device.setPollingRate($0) })) {
+                    ForEach(PollingRate.allCases) { Text("\($0.label) Hz").tag($0) }
+                }
+                Picker("Scroll", selection: Binding(get: { device.scrollMode }, set: { device.setScrollMode($0) })) {
+                    ForEach(ScrollMode.allCases) { Text($0.label).tag($0) }
+                }
+            } else if device.isConnected {
+                Text("Connect by cable or dongle for quick controls.").font(.caption).foregroundStyle(.secondary)
+            }
+
+            Divider()
+            HStack {
+                Button("Open Basilisk") {
+                    openWindow(id: "main")
+                    NSApp.activate()
+                }
+                Spacer()
+                Button("Quit") { NSApp.terminate(nil) }
+            }
+        }
+        .padding(14)
+        .frame(width: 300)
+    }
+}
+
+struct SettingsView: View {
+    @AppStorage("showMenuBarExtra") private var showMenuBar = true
+    @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
+
+    var body: some View {
+        Form {
+            Toggle("Show in menu bar", isOn: $showMenuBar)
+            Toggle("Open at login", isOn: Binding(get: { launchAtLogin }, set: { on in
+                do {
+                    if on { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
+                } catch {}
+                launchAtLogin = SMAppService.mainApp.status == .enabled
+            }))
+            Text("Your settings live on the mouse itself; Basilisk only needs to run while you change them. Keeping it in the menu bar shows battery and quick controls.")
+                .font(.caption).foregroundStyle(.secondary)
+        }
+        .formStyle(.grouped)
+        .frame(width: 420)
+        .fixedSize(horizontal: false, vertical: true)
+    }
+}

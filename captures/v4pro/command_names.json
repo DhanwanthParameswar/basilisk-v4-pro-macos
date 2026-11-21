@@ -1,0 +1,1477 @@
+{
+ "08:82": [
+  2,
+  "Set EQ Setting",
+  "71668"
+ ],
+ "00:81": [
+  2,
+  "Get Firmware Version",
+  "14397"
+ ],
+ "00:82": [
+  22,
+  "Get Serial Number",
+  "14397"
+ ],
+ "00:02": [
+  22,
+  "Set Serial Number",
+  "14397"
+ ],
+ "00:83": [
+  2,
+  "Get Device Mode",
+  "14397"
+ ],
+ "00:84": [
+  2,
+  "Set Device Mode",
+  "14397"
+ ],
+ "00:04": [
+  2,
+  "Get Device Polling Period",
+  "14397"
+ ],
+ "00:85": [
+  1,
+  "Set Device Polling Period",
+  "14397"
+ ],
+ "00:05": [
+  1,
+  "Get Edition Information",
+  "14397"
+ ],
+ "00:86": [
+  3,
+  "Set Edition Information",
+  "14397"
+ ],
+ "00:06": [
+  3,
+  "Get Extended Firmware Version",
+  "14397"
+ ],
+ "00:87": [
+  4,
+  "Get Game Mode State",
+  "14397"
+ ],
+ "00:88": [
+  4,
+  "Set Game Mode State",
+  "14397"
+ ],
+ "00:08": [
+  4,
+  "Set Device Reset",
+  "14397"
+ ],
+ "00:0e": [
+  2,
+  "Get Device Profile Polling Period",
+  "14397"
+ ],
+ "00:91": [
+  2,
+  "Set Device Profile Polling Period",
+  "14397"
+ ],
+ "00:92": [
+  22,
+  "Get Dock Firmware Version",
+  "14397"
+ ],
+ "00:93": [
+  4,
+  "Get Dock Extended Firmware Version",
+  "14397"
+ ],
+ "00:33": [
+  1,
+  "Get Device Ambidextrous Information",
+  "14397"
+ ],
+ "00:36": [
+  80,
+  "Set Device Ambidextrous Information",
+  "14397"
+ ],
+ "00:b7": [
+  1,
+  "Get Device HW Info",
+  "14397"
+ ],
+ "00:37": [
+  1,
+  "Set Device HW Info Force Check",
+  "14397"
+ ],
+ "00:b8": [
+  1,
+  "Get Device External Power Supply Status",
+  "14397"
+ ],
+ "00:b9": [
+  1,
+  "Set Device External Power Supply Status",
+  "14397"
+ ],
+ "00:bb": [
+  1,
+  "Get Device Wireless Connection Status",
+  "14397"
+ ],
+ "00:bc": [
+  3,
+  "Get Mouse Side Pad Connection Status",
+  "14397"
+ ],
+ "00:3c": [
+  3,
+  "Get Device On Dock Charging Status",
+  "14397"
+ ],
+ "00:bf": [
+  80,
+  "Get Dock Edition Information",
+  "14397"
+ ],
+ "00:c0": [
+  2,
+  "Set Dock Edition Information",
+  "14397"
+ ],
+ "00:40": [
+  2,
+  "Get Multiple Device Wireless Connection Status V2",
+  "14397"
+ ],
+ "00:41": [
+  3,
+  "Get USB High Speed Polling Period",
+  "14397"
+ ],
+ "00:42": [
+  2,
+  "Set USB High Speed Polling Period",
+  "14397"
+ ],
+ "00:46": [
+  1,
+  "Set Device Pairing Mode",
+  "14397"
+ ],
+ "00:c3": [
+  4,
+  "Set Device Unpair",
+  "14397"
+ ],
+ "00:c4": [
+  1,
+  "Set Device Scan",
+  "14397"
+ ],
+ "00:44": [
+  1,
+  "Get Falcon Protocol Version",
+  "14397"
+ ],
+ "00:c5": [
+  3,
+  "Get Hardware Auto Detect Ctrl",
+  "14397"
+ ],
+ "00:c7": [
+  2,
+  "Set Hardware Auto Detect Ctrl",
+  "14397"
+ ],
+ "00:47": [
+  2,
+  "Get Multiple Device Primary Device",
+  "14397"
+ ],
+ "00:d5": [
+  1,
+  "Get Active Wireless Connection State",
+  "14397"
+ ],
+ "00:55": [
+  1,
+  "Set Active Wireless Connection State",
+  "14397"
+ ],
+ "00:d7": [
+  1,
+  "Get Device Auto Pairing Status",
+  "14397"
+ ],
+ "00:d8": [
+  80,
+  "Set Device Auto Pairing Status",
+  "14397"
+ ],
+ "00:58": [
+  80,
+  "Get Device Power Button Status",
+  "14397"
+ ],
+ "00:da": [
+  3,
+  "Get Multiple Device Wired Connection Status",
+  "14397"
+ ],
+ "00:5a": [
+  3,
+  "Set Multiple Device Wired Connection Status",
+  "14397"
+ ],
+ "00:db": [
+  1,
+  "Get Device Game Mode Selection",
+  "14397"
+ ],
+ "00:5b": [
+  1,
+  "Set Device Game Mode Selection",
+  "14397"
+ ],
+ "00:dc": [
+  32,
+  "Get Tournament Mode",
+  "14397"
+ ],
+ "00:5c": [
+  32,
+  "Set Tournament Mode",
+  "14397"
+ ],
+ "03:80": [
+  3,
+  "Get LED State",
+  "38902"
+ ],
+ "03:00": [
+  3,
+  "Set LED State",
+  "38902"
+ ],
+ "03:81": [
+  5,
+  "Get LED RGB",
+  "38902"
+ ],
+ "03:01": [
+  5,
+  "Set LED RGB",
+  "38902"
+ ],
+ "03:82": [
+  3,
+  "Get LED Effect",
+  "38902"
+ ],
+ "03:02": [
+  3,
+  "Set LED Effect",
+  "38902"
+ ],
+ "03:83": [
+  3,
+  "Get LED Brightness",
+  "38902"
+ ],
+ "03:03": [
+  3,
+  "Set LED Brightness",
+  "38902"
+ ],
+ "03:84": [
+  4,
+  "Get LED Blinking",
+  "38902"
+ ],
+ "03:04": [
+  4,
+  "Set LED Blinking",
+  "38902"
+ ],
+ "03:85": [
+  20,
+  "Get LED Pulsating",
+  "38902"
+ ],
+ "03:05": [
+  20,
+  "Set LED Pulsating",
+  "38902"
+ ],
+ "03:86": [
+  6,
+  "Get LED SW Controlled Parameter",
+  "38902"
+ ],
+ "03:06": [
+  6,
+  "Set LED SW Controlled Parameter",
+  "38902"
+ ],
+ "03:87": [
+  6,
+  "Get LED Transition Time",
+  "38902"
+ ],
+ "03:07": [
+  6,
+  "Set LED Transition Time",
+  "38902"
+ ],
+ "03:88": [
+  6,
+  "Get LED RGB Max Value",
+  "38902"
+ ],
+ "03:08": [
+  6,
+  "Set LED RGB Max Value",
+  "38902"
+ ],
+ "03:89": [
+  80,
+  "Get LED ID List",
+  "38902"
+ ],
+ "03:0a": [
+  80,
+  "Set LED Matrix RGB Effect",
+  "38902"
+ ],
+ "03:0b": [
+  70,
+  "Set LED Matrix RGB Define Pattern",
+  "38902"
+ ],
+ "03:0c": [
+  80,
+  "Set LED Lighting Bar Define Pattern",
+  "38902"
+ ],
+ "03:0d": [
+  80,
+  "Set LED Extend Matrix RGB Effect",
+  "38902"
+ ],
+ "03:8e": [
+  80,
+  "Get LED Color Table Definition",
+  "38902"
+ ],
+ "03:0e": [
+  80,
+  "Set LED Color Table Definition",
+  "38902"
+ ],
+ "03:8f": [
+  3,
+  "Get LED Dock Synchronize Control",
+  "38902"
+ ],
+ "03:0f": [
+  3,
+  "Set LED Dock Synchronize Control",
+  "38902"
+ ],
+ "03:90": [
+  1,
+  "Get LED Charging Effect Control",
+  "38902"
+ ],
+ "03:10": [
+  1,
+  "Set LED Charging Effect Control",
+  "38902"
+ ],
+ "03:a0": [
+  3,
+  "Get LED Get GPU Card Detection",
+  "38902"
+ ],
+ "03:20": [
+  3,
+  "Set LED Get GPU Card Detection",
+  "38902"
+ ],
+ "03:92": [
+  50,
+  "Get Knob Configuration Information",
+  "38902"
+ ],
+ "03:12": [
+  50,
+  "Set Knob Configuration Information",
+  "38902"
+ ],
+ "03:93": [
+  8,
+  "Get Current Knob Mode",
+  "38902"
+ ],
+ "03:13": [
+  8,
+  "Set Current Knob Mode",
+  "38902"
+ ],
+ "03:14": [
+  2,
+  "Get LED Meter Control",
+  "38902"
+ ],
+ "0f:80": [
+  80,
+  "Get Chroma Region ID List",
+  "87771"
+ ],
+ "0f:81": [
+  80,
+  "Get Chroma Stripe LED Number",
+  "87771"
+ ],
+ "0f:82": [
+  80,
+  "Set Chroma Stripe LED Number",
+  "87771"
+ ],
+ "0f:02": [
+  80,
+  "Get Force Chroma Ctrl",
+  "87771"
+ ],
+ "0f:03": [
+  80,
+  "Set Force Chroma Ctrl",
+  "87771"
+ ],
+ "0f:04": [
+  3,
+  "Get Audio Chroma display Switch",
+  "87771"
+ ],
+ "0f:85": [
+  5,
+  "Set Audio Chroma display Switch",
+  "87771"
+ ],
+ "0f:05": [
+  5,
+  "Get Chroma Tap",
+  "87771"
+ ],
+ "0f:86": [
+  2,
+  "Set Chroma Tap",
+  "87771"
+ ],
+ "0f:06": [
+  2,
+  "Get Chroma Effect Quick Switch ID",
+  "87771"
+ ],
+ "0f:07": [
+  80,
+  "Set Chroma Effect Quick Switch ID",
+  "87771"
+ ],
+ "0f:88": [
+  0,
+  "Set Trigger Firmware Effects",
+  "87771"
+ ],
+ "0f:08": [
+  7,
+  "Get Startup Animation Control",
+  "87771"
+ ],
+ "0f:90": [
+  1,
+  "Set Startup Animation Control",
+  "87771"
+ ],
+ "0f:10": [
+  1,
+  "Get Chroma Effect ID List",
+  "87771"
+ ],
+ "0f:92": [
+  3,
+  "Get Chroma Effect",
+  "87771"
+ ],
+ "0f:12": [
+  3,
+  "Set Chroma Effect",
+  "87771"
+ ],
+ "0f:93": [
+  4,
+  "Set Chroma Frame",
+  "87771"
+ ],
+ "0f:13": [
+  4,
+  "Get Chroma Brightness",
+  "87771"
+ ],
+ "0f:94": [
+  2,
+  "Set Chroma Brightness",
+  "87771"
+ ],
+ "0f:14": [
+  2,
+  "Get Chroma Calibration",
+  "87771"
+ ],
+ "0f:17": [
+  80,
+  "Set Chroma Calibration",
+  "87771"
+ ],
+ "0f:98": [
+  1,
+  "Get Chroma Fn Overlay Control",
+  "87771"
+ ],
+ "0f:18": [
+  2,
+  "Set Chroma Fn Overlay Control",
+  "87771"
+ ],
+ "07:80": [
+  2,
+  "Get Battery Level",
+  "57938"
+ ],
+ "07:81": [
+  1,
+  "Get Battery Critical Level",
+  "57938"
+ ],
+ "07:01": [
+  1,
+  "Set Battery Critical Level",
+  "57938"
+ ],
+ "07:82": [
+  1,
+  "Get LED Max Brightness on Battery Mode",
+  "57938"
+ ],
+ "07:02": [
+  1,
+  "Set LED Max Brightness on Battery Mode",
+  "57938"
+ ],
+ "07:83": [
+  2,
+  "Get Time to Sleep Mode on Battery Mode",
+  "57938"
+ ],
+ "07:03": [
+  2,
+  "Set Time to Sleep Mode on Battery Mode",
+  "57938"
+ ],
+ "07:84": [
+  2,
+  "Get Device Charging Status",
+  "57938"
+ ],
+ "07:08": [
+  2,
+  "Get Auto Sleep Mode",
+  "57938"
+ ],
+ "07:0b": [
+  5,
+  "Set Auto Sleep Mode",
+  "57938"
+ ],
+ "07:8c": [
+  2,
+  "Get Time To Dim",
+  "57938"
+ ],
+ "07:8e": [
+  3,
+  "Set Time To Dim",
+  "57938"
+ ],
+ "07:8f": [
+  1,
+  "Get Adapter Wattage Level",
+  "57938"
+ ],
+ "07:0f": [
+  1,
+  "Get Power Security Status",
+  "57938"
+ ],
+ "07:90": [
+  1,
+  "Get Power Mode Control",
+  "57938"
+ ],
+ "07:10": [
+  1,
+  "Set Power Mode Control",
+  "57938"
+ ],
+ "07:12": [
+  1,
+  "Get Indicator Led Configuration",
+  "57938"
+ ],
+ "07:93": [
+  3,
+  "Set Indicator Led Configuration",
+  "57938"
+ ],
+ "07:13": [
+  3,
+  "Get Battery Charge Limiter Control",
+  "57938"
+ ],
+ "07:94": [
+  1,
+  "Set Battery Charge Limiter Control",
+  "57938"
+ ],
+ "07:14": [
+  1,
+  "Get Smart illumination Control",
+  "57938"
+ ],
+ "07:95": [
+  3,
+  "Set Smart illumination Control",
+  "57938"
+ ],
+ "07:15": [
+  3,
+  "Get Battery Discharge Curve",
+  "57938"
+ ],
+ "07:a1": [
+  0,
+  "Get indicator LEDs Configuration",
+  "57938"
+ ],
+ "07:a2": [
+  0,
+  "Set indicator LEDs Configuration",
+  "57938"
+ ],
+ "0d:80": [
+  80,
+  "Get Thermal Fan Id List",
+  "63472"
+ ],
+ "0d:81": [
+  3,
+  "Get Thermal Fan Speed",
+  "63472"
+ ],
+ "0d:01": [
+  3,
+  "Set Thermal Fan Speed",
+  "63472"
+ ],
+ "0d:82": [
+  4,
+  "Get Thermal Fan Mode",
+  "63472"
+ ],
+ "0d:02": [
+  4,
+  "Set Thermal Fan Mode",
+  "63472"
+ ],
+ "0d:83": [
+  12,
+  "Set Thermal Fan Table",
+  "63472"
+ ],
+ "0d:85": [
+  80,
+  "Get Thermal Advance Fan Mode",
+  "63472"
+ ],
+ "0d:86": [
+  7,
+  "Set Thermal Advance Fan Mode",
+  "63472"
+ ],
+ "0d:87": [
+  3,
+  "Get Thermal Advance Fan Mode Wattage",
+  "63472"
+ ],
+ "0d:07": [
+  3,
+  "Set Thermal Advance Fan Mode Wattage",
+  "63472"
+ ],
+ "0d:88": [
+  3,
+  "Set VGA Configure Setting",
+  "63472"
+ ],
+ "0d:89": [
+  2,
+  "Get Thermal Fan Cooling Mode",
+  "63472"
+ ],
+ "0d:09": [
+  2,
+  "Set Thermal Fan Cooling Mode",
+  "63472"
+ ],
+ "0d:90": [
+  3,
+  "Get VGA Hardware Information",
+  "63472"
+ ],
+ "0d:10": [
+  3,
+  "Get Synapse UI Setting",
+  "63472"
+ ],
+ "0d:8a": [
+  2,
+  "Get Thermal Fan Duty Cycle",
+  "63472"
+ ],
+ "0d:8b": [
+  2,
+  "Set Thermal Fan Duty Cycle",
+  "63472"
+ ],
+ "0d:8e": [
+  1,
+  "Get Mini LED Panel Resolution",
+  "63472"
+ ],
+ "0d:0e": [
+  1,
+  "Set Mini LED Panel Resolution",
+  "63472"
+ ],
+ "0d:8f": [
+  1,
+  "Get SKU hardware configuration",
+  "63472"
+ ],
+ "04:85": [
+  7,
+  "Get Profile Active DPI Setting",
+  "87969"
+ ],
+ "04:05": [
+  7,
+  "Set Profile Active DPI Setting",
+  "87969"
+ ],
+ "04:86": [
+  80,
+  "Get Profile DPI Class Data",
+  "87969"
+ ],
+ "04:06": [
+  80,
+  "Set Profile DPI Class Data",
+  "87969"
+ ],
+ "02:02": [
+  4,
+  "Get Single Hard Switch",
+  "87969"
+ ],
+ "02:06": [
+  2,
+  "Set Debounce Time",
+  "87969"
+ ],
+ "02:0c": [
+  80,
+  "Get Fn Key State",
+  "87969"
+ ],
+ "02:8d": [
+  80,
+  "Set Fn Key State",
+  "87969"
+ ],
+ "02:0d": [
+  80,
+  "Get Single Button Assignment",
+  "87969"
+ ],
+ "02:8e": [
+  80,
+  "Set Single Button Assignment",
+  "87969"
+ ],
+ "02:8f": [
+  80,
+  "Get Single Key Assignment",
+  "87969"
+ ],
+ "02:12": [
+  80,
+  "Set Single Key Assignment",
+  "87969"
+ ],
+ "02:94": [
+  2,
+  "Get Button Assignment List",
+  "87969"
+ ],
+ "02:14": [
+  2,
+  "Get Single Analog Key Assignment",
+  "87969"
+ ],
+ "02:b0": [
+  2,
+  "Set Single Analog Key Assignment",
+  "87969"
+ ],
+ "02:30": [
+  2,
+  "Set Scroll Free-Notched Mode",
+  "87969"
+ ],
+ "15:8b": [
+  2,
+  "Get Scroll Tactile/Free Spin/Micro Tactile Mode",
+  "87969"
+ ],
+ "15:0b": [
+  2,
+  "Set Scroll Tactile/Free Spin/Micro Tactile Mode",
+  "87969"
+ ],
+ "02:95": [
+  5,
+  "Get LK Scroll Wheel Mode Selected Information",
+  "87969"
+ ],
+ "02:15": [
+  5,
+  "Set LK Scroll Wheel Mode Selected Information",
+  "87969"
+ ],
+ "02:96": [
+  2,
+  "Get Profile Debounce Time",
+  "87969"
+ ],
+ "02:16": [
+  2,
+  "Set Profile Debounce Time",
+  "87969"
+ ],
+ "02:97": [
+  80,
+  "Set Scroll Virtual Acceleration State",
+  "87969"
+ ],
+ "02:17": [
+  80,
+  "Set Scroll Mode Auto Switch State",
+  "87969"
+ ],
+ "02:99": [
+  80,
+  "Get Multi Analog Key Actuation Point",
+  "87969"
+ ],
+ "02:19": [
+  80,
+  "Set Multi Analog Key Actuation Point",
+  "87969"
+ ],
+ "02:9a": [
+  80,
+  "Get Multi Analog Key Rapid Trigger",
+  "87969"
+ ],
+ "02:1a": [
+  80,
+  "Set Multi Analog Key Rapid Trigger",
+  "87969"
+ ],
+ "02:9b": [
+  80,
+  "Get Multi Mod Tap Key Assignment",
+  "87969"
+ ],
+ "02:1b": [
+  80,
+  "Set Multi Mod Tap Key Assignment",
+  "87969"
+ ],
+ "02:9c": [
+  80,
+  "Get Multi Key Assignment",
+  "87969"
+ ],
+ "02:9e": [
+  80,
+  "Set Multi Key Assignment",
+  "87969"
+ ],
+ "02:1e": [
+  80,
+  "Get Interruptible Macro Settings",
+  "87969"
+ ],
+ "02:ad": [
+  7,
+  "Set Interruptible Macro Settings",
+  "87969"
+ ],
+ "02:2d": [
+  7,
+  "Get Interruptible Dynamic Keystroke Settings",
+  "87969"
+ ],
+ "02:ae": [
+  7,
+  "Set Interruptible Dynamic Keystroke Settings",
+  "87969"
+ ],
+ "02:2e": [
+  7,
+  "Set Analog Key Adjustment Mode Ctrl",
+  "87969"
+ ],
+ "02:9f": [
+  2,
+  "Set Analog Key Continuous Rapid Trigger",
+  "87969"
+ ],
+ "02:1f": [
+  2,
+  "Set Analog Calibration Mode",
+  "87969"
+ ],
+ "02:a0": [
+  2,
+  "Get Analog Key Calibration Data By Key ID",
+  "87969"
+ ],
+ "02:20": [
+  2,
+  "Set Analog Key User Calibration Data By Key ID",
+  "87969"
+ ],
+ "fe:20": [
+  1,
+  "Set Analog User Bottom Calibration",
+  "87969"
+ ],
+ "fe:a7": [
+  3,
+  "Get Analog User Bottom Calibration",
+  "87969"
+ ],
+ "fe:ae": [
+  2,
+  "Set Analog User Top Calibration",
+  "87969"
+ ],
+ "fe:2d": [
+  1,
+  "Get Analog User Top Calibration",
+  "87969"
+ ],
+ "fe:ad": [
+  2,
+  "Set Analog User Calibration Mode Ctrl",
+  "87969"
+ ],
+ "02:41": [
+  1,
+  "Get Analog User Calibration Status",
+  "87969"
+ ],
+ "02:c1": [
+  1,
+  "Set Analog Switch Type",
+  "87969"
+ ],
+ "02:40": [
+  1,
+  "Get Analog Switch Type",
+  "87969"
+ ],
+ "02:c2": [
+  0,
+  "Set Keyboard Kill Switch Ctrl",
+  "87969"
+ ],
+ "02:43": [
+  0,
+  "Set Scroll Virtual Acceleration Level",
+  "87969"
+ ],
+ "02:c3": [
+  0,
+  "Set Scroll Wheel Smart Reel Mode Threshold",
+  "87969"
+ ],
+ "02:a1": [
+  4,
+  "Set Button Mapping Mode",
+  "87969"
+ ],
+ "02:21": [
+  4,
+  "Set Snap Tap Ctrl",
+  "87969"
+ ],
+ "02:a2": [
+  2,
+  "Get Single-key Snap Tap Ctrl",
+  "87969"
+ ],
+ "02:22": [
+  2,
+  "Set Single-key Snap Tap Ctrl",
+  "87969"
+ ],
+ "02:a3": [
+  2,
+  "Set Analog Key Bottom Dead-Zone Value",
+  "87969"
+ ],
+ "02:23": [
+  2,
+  "Set Analog Key Data Report Delta",
+  "87969"
+ ],
+ "02:a5": [
+  2,
+  "Set Analog Report Mode",
+  "87969"
+ ],
+ "02:25": [
+  2,
+  "Get Game Mode Custom Keys Selection",
+  "87969"
+ ],
+ "02:24": [
+  1,
+  "Set Game Mode Custom Keys Selection",
+  "87969"
+ ],
+ "02:a4": [
+  1,
+  "Get Dual Keypress Priority",
+  "87969"
+ ],
+ "02:a7": [
+  15,
+  "Set Dual Keypress Priority",
+  "87969"
+ ],
+ "02:27": [
+  15,
+  "Get Number of Keymaps",
+  "87969"
+ ],
+ "02:ac": [
+  11,
+  "Set Add Keymap",
+  "87969"
+ ],
+ "02:2c": [
+  11,
+  "Set Remove Keymap",
+  "87969"
+ ],
+ "02:a8": [
+  2,
+  "Get Keymap Name With Offset",
+  "87969"
+ ],
+ "02:28": [
+  2,
+  "Set Keymap Name With Offset",
+  "87969"
+ ],
+ "02:a9": [
+  2,
+  "Get Active Keymap",
+  "87969"
+ ],
+ "02:29": [
+  2,
+  "Set Active Keymap",
+  "87969"
+ ],
+ "02:aa": [
+  1,
+  "Set OBM Keymap",
+  "87969"
+ ],
+ "02:2a": [
+  1,
+  "Set Analog Joystick Report Mode",
+  "87969"
+ ],
+ "00:dd": [
+  10,
+  "Get Analog Joystick Mapping Mode",
+  "87969"
+ ],
+ "00:5d": [
+  10,
+  "Set Analog Joystick Mapping Mode",
+  "87969"
+ ],
+ "02:ab": [
+  1,
+  "Delete Macro",
+  "87969"
+ ],
+ "02:b1": [
+  7,
+  "Get Macro Memory Data",
+  "87969"
+ ],
+ "02:31": [
+  7,
+  "Set Macro Memory Data",
+  "87969"
+ ],
+ "02:b2": [
+  1,
+  "Get Macro Memory Management",
+  "87969"
+ ],
+ "02:33": [
+  2,
+  "Set Macro Memory Management",
+  "87969"
+ ],
+ "02:34": [
+  2,
+  "Get Macro Name With Offset",
+  "87969"
+ ],
+ "02:b5": [
+  80,
+  "Set Macro Name With Offset",
+  "87969"
+ ],
+ "02:35": [
+  80,
+  "Set Delete Profile",
+  "87969"
+ ],
+ "02:b6": [
+  2,
+  "Set Active Profile ID",
+  "87969"
+ ],
+ "02:36": [
+  2,
+  "Get Profile Name With Offset",
+  "87969"
+ ],
+ "02:b7": [
+  1,
+  "Set Profile Name With Offset",
+  "87969"
+ ],
+ "02:37": [
+  1,
+  "Set Profile Reset",
+  "87969"
+ ],
+ "02:b8": [
+  1,
+  "Get Profile Color",
+  "87969"
+ ],
+ "02:38": [
+  1,
+  "Set Profile Color",
+  "87969"
+ ],
+ "02:b9": [
+  2,
+  "Get Proximity Sensor Calibration",
+  "87969"
+ ],
+ "02:39": [
+  2,
+  "Start Proximity Sensor Calibration",
+  "87969"
+ ],
+ "06:80": [
+  2,
+  "Get Proximity Sensor Threshold",
+  "87969"
+ ],
+ "06:03": [
+  2,
+  "Set Proximity Sensor Threshold",
+  "87969"
+ ],
+ "06:08": [
+  6,
+  "Get Proximity Sensor State",
+  "87969"
+ ],
+ "06:89": [
+  80,
+  "Set Proximity Sensor State",
+  "87969"
+ ],
+ "06:09": [
+  80,
+  "Get Proximity Sensor Hardware",
+  "87969"
+ ],
+ "06:8a": [
+  6,
+  "Set Proximity Sensor Hardware",
+  "87969"
+ ],
+ "06:0a": [
+  6,
+  "Get Proximity Sensor Configuration",
+  "87969"
+ ],
+ "06:8b": [
+  80,
+  "Set Proximity Sensor Configuration",
+  "87969"
+ ],
+ "06:8c": [
+  80,
+  "Get Proximity Sensor Manual Calibration",
+  "87969"
+ ],
+ "06:0c": [
+  80,
+  "Get Proximity Sensor Accuracy",
+  "87969"
+ ],
+ "05:80": [
+  1,
+  "Set Proximity Sensor Accuracy",
+  "87969"
+ ],
+ "05:81": [
+  80,
+  "Get Proximity Sensor Calibration Data",
+  "87969"
+ ],
+ "05:02": [
+  1,
+  "Set Proximity Sensor Calibration Data",
+  "87969"
+ ],
+ "05:03": [
+  1,
+  "Get Proximity Sensor Control",
+  "87969"
+ ],
+ "05:84": [
+  1,
+  "Set Proximity Sensor Control",
+  "87969"
+ ],
+ "05:04": [
+  1,
+  "Get Proximity Sensor Lifted Indicator",
+  "87969"
+ ],
+ "05:08": [
+  80,
+  "Set Proximity Sensor Lifted Indicator",
+  "87969"
+ ],
+ "05:0b": [
+  1,
+  "Set Proximity Sensor Lift Setting",
+  "87969"
+ ],
+ "05:8c": [
+  4,
+  "Set Proximity Sensor Lift To Track Calibration Data",
+  "87969"
+ ],
+ "05:0c": [
+  4,
+  "Set Proximity Sensor Track To Lift Calibration Data",
+  "87969"
+ ],
+ "0b:80": [
+  2,
+  "Get Proximity Sensor Acceleration State",
+  "87969"
+ ],
+ "0b:81": [
+  8,
+  "Set Proximity Sensor Acceleration State",
+  "87969"
+ ],
+ "0b:01": [
+  8,
+  "Get Proximity Sensor Acceleration Mode",
+  "87969"
+ ],
+ "0b:82": [
+  8,
+  "Set Proximity Sensor Acceleration Mode",
+  "87969"
+ ],
+ "0b:02": [
+  8,
+  "Get Proximity Sensor Acceleration curve setting",
+  "87969"
+ ],
+ "0b:83": [
+  3,
+  "Set Proximity Sensor Acceleration curve setting",
+  "87969"
+ ],
+ "0b:03": [
+  3,
+  "Get Proximity Sensor Acceleration curve data",
+  "87969"
+ ],
+ "0b:84": [
+  6,
+  "Set Proximity Sensor Acceleration curve data",
+  "87969"
+ ],
+ "0b:04": [
+  6,
+  "Get Proximity Sensor Angle Tune",
+  "87969"
+ ],
+ "0b:85": [
+  10,
+  "Set Proximity Sensor Angle Tune",
+  "87969"
+ ],
+ "0b:05": [
+  10,
+  "Get Hapticore Scroll Profile Active Stage",
+  "87969"
+ ],
+ "0b:86": [
+  7,
+  "Set Hapticore Scroll Profile Active Stage",
+  "87969"
+ ],
+ "0b:87": [
+  3,
+  "Get Hapticore Scroll Profile Max Stage",
+  "87969"
+ ],
+ "0b:07": [
+  3,
+  "Set Hapticore Scroll Profile Max Stage",
+  "87969"
+ ],
+ "0b:88": [
+  50,
+  "Get Hapticore Scroll Profile Tick Setting",
+  "87969"
+ ],
+ "0b:08": [
+  50,
+  "Set Hapticore Scroll Profile Tick Setting",
+  "87969"
+ ],
+ "0b:89": [
+  4,
+  "Get Hapticore Scroll Profile Generator Setting",
+  "87969"
+ ],
+ "0b:09": [
+  4,
+  "Set Hapticore Scroll Profile Generator Setting",
+  "87969"
+ ],
+ "0b:8a": [
+  3,
+  "Get Hapticore Scroll Profile Generator Table",
+  "87969"
+ ],
+ "0b:0a": [
+  3,
+  "Set Hapticore Scroll Profile Generator Table",
+  "87969"
+ ],
+ "0b:90": [
+  2,
+  "Get Hapticore Scroll Stage Information",
+  "87969"
+ ],
+ "0b:10": [
+  2,
+  "Set Hapticore Scroll Stage Information",
+  "87969"
+ ],
+ "0b:91": [
+  2,
+  "Set Hapticore Scroll Generator Custom Meta Data",
+  "87969"
+ ],
+ "0b:11": [
+  2,
+  "Set Haptic Scroll Haptic Stage Reset",
+  "87969"
+ ],
+ "0b:92": [
+  3,
+  "Set Interhaptics A2H Profile",
+  "87969"
+ ],
+ "0b:12": [
+  3,
+  "Set OLED Command dial active mode",
+  "87969"
+ ],
+ "0b:93": [
+  37,
+  "Calibrated",
+  "87969"
+ ],
+ "0b:13": [
+  37,
+  "Reset fail",
+  "87969"
+ ],
+ "0b:94": [
+  3,
+  "Resetting",
+  "87969"
+ ],
+ "0b:14": [
+  3,
+  "Reset done",
+  "87969"
+ ]
+}

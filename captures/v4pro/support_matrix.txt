@@ -1,0 +1,92 @@
+SUPPORTED (02=ok, 03=supported but needs other args):
+  00:81 02 Get Firmware Version                               02 00 81 01 02 00
+  00:82 02 Get Serial Number                                  16 00 82 49 4f 32 36 33 38 48 33 38 39 30 34 36 31 31 00 00 00 00 
+  00:83 02                                                    02 00 83 01 40 00
+  00:84 02 Get Device Mode                                    02 00 84 03 00 00
+  00:86 02 Get Edition Information                            03 00 86 00 00 00 00
+  00:87 02 Get Extended Firmware Version                      04 00 87 01 02 00 00 00
+  00:bb 02 Get Device On Dock Charging Status                 01 00 bb 00 00
+  00:c0 02 Get USB High Speed Polling Period                  02 00 c0 01 08 00
+  00:db 03 Get Tournament Mode                                01 00 db 01 00
+  02:8e 02 Get Button Assignment List                         50 02 8e 01 00 00 01 01 01 01 00 00 00 00 02 01 01 02 00 00 00 00 
+  02:96 02 Get Profile Debounce Time                          02 02 96 01 00 00
+  02:a2 02 Get Single-key Snap Tap Ctrl                       02 02 a2 01 02 00
+  02:b0 02 Get Scroll Tactile/Free Spin/Micro Tactile Mode    02 02 b0 01 00 00
+  04:85 02 sendCommand                                        07 04 85 01 06 40 06 40 00 00 00
+  04:86 02 Get Profile DPI Class Data                         50 04 86 01 03 05 01 01 90 01 90 00 00 02 03 20 03 20 00 00 03 06 
+  05:80 02 Set Proximity Sensor Accuracy                      01 05 80 01 00
+  05:81 02 Get Proximity Sensor Calibration Data              02 05 81 05 01 00
+  05:84 02 Set Proximity Sensor Control                       01 05 84 01 00
+  05:8c 03 Get Profile Color                                  04 05 8c 01 00 00 00 00
+  06:80 02 Get Proximity Sensor Threshold                     02 06 80 00 00 00
+  06:89 02 Get Macro Memory Data                              50 06 89 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  06:8a 02 Get Macro Memory Management                        06 06 8a 01 00 00 00 00 00 00
+  06:8b 02 Ro                                                 50 06 8b 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  06:8c 03 Get Macro Name With Offset                         50 06 8c 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  07:80 02 Get Battery Level                                  02 07 80 01 f0 00
+  07:81 02 Get Battery Critical Level                         01 07 81 4d 00
+  07:82 02 Get LED Max Brightness on Battery Mode             01 07 82 55 00
+  07:83 02 Get Time to Sleep Mode on Battery Mode             02 07 83 01 2c 00
+  07:84 02 Get Device Charging Status                         02 07 84 01 01 00
+  07:93 02 Get Smart illumination Control                     03 07 93 01 01 01 00
+  0b:80 02 Get Proximity Sensor Acceleration State            02 0b 80 01 04 00
+  0b:81 03 Get Proximity Sensor Calibration                   08 0b 81 01 00 00 00 00 00 00 00 00
+  0b:82 03 Get Proximity Sensor Threshold                     08 0b 82 01 00 00 00 00 00 00 00 00
+  0b:83 03 Get Proximity Sensor State                         03 0b 83 01 00 00 00
+  0b:84 03 Get Proximity Sensor Hardware                      06 0b 84 01 00 00 00 00 00 00
+  0b:85 02 Get Proximity Sensor Configuration                 0a 0b 85 01 00 01 0c 0b 00 00 00 00 00 00
+  0b:86 03 Get Proximity Sensor Manual Calibration            07 0b 86 01 00 00 00 00 00 00 00
+  0b:87 03 Get Proximity Sensor Accuracy                      03 0b 87 01 00 00 00
+  0b:88 03 Get Proximity Sensor Calibration Data              32 0b 88 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0b:89 03 Get Proximity Sensor Control                       04 0b 89 01 00 00 00 00
+  0b:8a 03 Get Proximity Sensor Lifted Indicator              03 0b 8a 01 00 00 00
+  0b:90 02 Get Proximity Sensor Acceleration State            02 0b 90 01 00 00
+  0b:91 02 Get Proximity Sensor Acceleration Mode             02 0b 91 01 00 00
+  0b:92 02 Get Proximity Sensor Acceleration curve setting    03 0b 92 01 00 00 00
+  0b:93 03 Get Proximity Sensor Acceleration curve data       25 0b 93 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  0b:94 02 Get Proximity Sensor Angle Tune                    03 0b 94 01 00 00 00
+  0f:80 02 Get Chroma Region ID List                          0f 0f 80 01 19 03 01 01 04 19 03 01 01 0a 19 03 01 05 00
+  0f:81 02 Get Chroma Effect ID List                          08 0f 81 01 00 01 02 03 04 05 08 00
+  0f:82 02 Get Chroma Effect                                  0c 0f 82 00 04 03 00 00 00 00 00 00 00 00 00 00
+  0f:85 02 Get Chroma Calibration                             05 0f 85 01 ff ff ff ff 00
+  0f:86 03 Get Chroma Fn Overlay Control                      02 0f 86 01 00 00
+  0f:88 03 Get Chroma Stripe LED Number                       01 0f 88 01 00
+  0f:90 03 Get Force Chroma Ctrl                              01 0f 90 01 00
+  0f:92 03 Get Audio Chroma display Switch                    03 0f 92 01 00 00 00
+  0f:93 03 Get Chroma Tap                                     04 0f 93 01 00 00 00 00
+  0f:94 03 Get Chroma Effect Quick Switch ID                  02 0f 94 01 00 00
+  0f:98 03 Get Startup Animation Control                      01 0f 98 01 00
+  15:80 02 Get Hapticore Scroll Profile Active Stage          02 15 80 01 00 00
+  15:81 02 Get Hapticore Scroll Profile Max Stage             02 15 81 01 00 00
+  15:82 02 Get Hapticore Scroll Profile Tick Setting          50 15 82 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  15:83 02 Get Hapticore Scroll Profile Generator Setting     50 15 83 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  15:84 02 Get Hapticore Scroll Profile Generator Table       50 15 84 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+  15:85 02 class15 probe                                      08 15 85 01 00 00 00 00 00 00 00 00
+  15:86 02 class15 probe                                      08 15 86 01 00 00 00 00 00 00 00 00
+  15:87 02 Get Hapticore Scroll Stage Information             09 15 87 01 07 00 00 00 00 00 00 00 00
+  15:88 02 class15 probe                                      08 15 88 01 00 00 00 00 00 00 00 00
+  15:89 02 class15 probe                                      08 15 89 01 00 00 00 00 00 00 00 00
+  15:8a 02 class15 probe                                      08 15 8a 01 00 00 00 00 00 00 00 00
+  15:8c 02 class15 probe                                      08 15 8c 01 00 00 00 00 00 00 00 00
+  15:8d 02 class15 probe                                      08 15 8d 01 00 00 00 00 00 00 00 00
+  15:8e 02 class15 probe                                      08 15 8e 01 00 00 00 00 00 00 00 00
+  15:8f 02 class15 probe                                      08 15 8f 01 00 00 00 00 00 00 00 00
+  15:90 02 class15 probe                                      08 15 90 01 00 00 00 00 00 00 00 00
+  15:91 02 class15 probe                                      08 15 91 01 00 00 00 00 00 00 00 00
+  15:92 02 class15 probe                                      08 15 92 01 00 00 00 00 00 00 00 00
+  15:94 02 class15 probe                                      08 15 94 01 00 00 00 00 00 00 00 00
+  15:95 02 class15 probe                                      08 15 95 01 00 00 00 00 00 00 00 00
+  15:96 02 class15 probe                                      08 15 96 01 00 00 00 00 00 00 00 00
+  15:97 02 class15 probe                                      08 15 97 01 00 00 00 00 00 00 00 00
+  15:98 02 class15 probe                                      08 15 98 01 00 00 00 00 00 00 00 00
+  15:9a 02 class15 probe                                      08 15 9a 01 00 00 00 00 00 00 00 00
+  15:9b 02 class15 probe                                      08 15 9b 01 00 00 00 00 00 00 00 00
+  15:9c 02 class15 probe                                      08 15 9c 01 00 00 00 00 00 00 00 00
+  15:9d 02 class15 probe                                      08 15 9d 01 00 00 00 00 00 00 00 00
+  15:9e 02 class15 probe                                      08 15 9e 01 00 00 00 00 00 00 00 00
+  15:9f 02 class15 probe                                      08 15 9f 01 00 00 00 00 00 00 00 00
+  fe:a7 03 Get Analog User Bottom Calibration                 03 fe a7 01 00 00 00
+  fe:ad 03 Get Analog User Top Calibration                    02 fe ad 01 00 00
+  fe:ae 03 Get Analog User Bottom Calibration                 02 fe ae 01 00 00
+NO RESPONSE: [('02:95', 'Get Profile Debounce Time'), ('02:97', 'Set Scroll Virtual Acceleration State'), ('02:a0', 'Get Analog Key Calibration Data By Key ID'), ('02:a3', 'Set Analog Key Bottom Dead-Zone Value'), ('15:8b', 'Get LK Scroll Wheel Mode Selected Information'), ('15:93', 'class15 probe'), ('15:99', 'class15 probe')]
+UNSUPPORTED (05): 00:85 00:88 00:91 00:92 00:93 00:b7 00:b8 00:b9 00:bc 00:bf 00:c3 00:c4 00:c5 00:c7 00:d5 00:d7 00:d8 00:da 00:dc 00:dd 02:8d 02:8f 02:94 02:99 02:9a 02:9b 02:9c 02:9e 02:9f 02:a1 02:a4 02:a5 02:a7 02:a8 02:a9 02:aa 02:ab 02:ac 02:ad 02:ae 02:b1 02:b2 02:b5 02:b6 02:b7 02:b8 02:b9 02:c1 02:c2 02:c3 03:80 03:81 03:82 03:83 03:84 03:85 03:86 03:87 03:88 03:89 03:8e 03:8f 03:90 03:92 03:93 03:a0 07:8c 07:8e 07:8f 07:90 07:94 07:95 07:a1 07:a2
