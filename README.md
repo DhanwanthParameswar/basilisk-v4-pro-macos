@@ -20,7 +20,12 @@ to keep running.
 It's built to be light. Discovery is hot-plug driven with no polling, there's no helper daemon or kernel extension,
 and it never asks for Input Monitoring. Details: [app/README.md](app/README.md).
 
-### Build
+### Download
+
+Get **Basilisk.app** from the [latest release](https://github.com/DhanwanthParameswar/basilisk-v4-pro-macos/releases/latest)
+(macOS 27, Apple silicon). It isn't notarized, so the first time, right-click the app → **Open**.
+
+### Build from source
 
 Requires macOS 27 and Xcode 27 (Swift 6.4).
 
