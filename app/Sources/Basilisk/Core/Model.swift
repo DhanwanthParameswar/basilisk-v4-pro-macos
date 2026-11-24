@@ -270,3 +270,77 @@ enum KeyNames {
         return m
     }
 }
+
+// MARK: - Onboard memory
+
+/// One of the mouse's profile slots. Slot 1 is the default profile and always exists;
+/// slots 2–5 are the onboard slots Synapse calls "On-Board Memory".
+struct OnboardProfile: Identifiable, Equatable, Sendable {
+    static let slotCount = 5
+    /// Indicator colours the firmware shows when you switch profiles (used if 05:8c gives nothing).
+    static let defaultColors: [UInt8: RGB] = [
+        1: .white, 2: RGB(r: 255, g: 0, b: 0), 3: RGB(r: 0, g: 255, b: 0),
+        4: RGB(r: 0, g: 0, b: 255), 5: RGB(r: 0, g: 255, b: 255)
+    ]
+
+    let id: UInt8
+    var name: String
+    var color: RGB
+    /// Raw 250-byte header (GUID · name · owner · mapping hash), kept so a rename preserves the rest.
+    var header: [UInt8]?
+
+    var isDefault: Bool { id == 1 }
+    var displayName: String {
+        if !name.isEmpty { return name }
+        return isDefault ? "Default" : "Profile \(id)"
+    }
+    var colorName: String {
+        ["White", "Red", "Green", "Blue", "Cyan"][Int(max(1, min(id, 5))) - 1]
+    }
+}
+
+/// Macro/profile flash storage (`06:8e`). Each extra profile costs 256 bytes.
+struct OnboardStorage: Equatable, Sendable {
+    var total: Int
+    var available: Int
+    var recyclable: Int
+    var used: Int { max(0, total - available) }
+    var fraction: Double { total > 0 ? Double(used) / Double(total) : 0 }
+}
+
+/// 250-byte profile header: GUID 16 · UTF-8 name 100 · owner 128 · key-mapping hash 6.
+enum ProfileHeader {
+    static let nameRange = 16..<116
+
+    static func name(from header: [UInt8]) -> String {
+        guard header.count >= nameRange.upperBound else { return "" }
+        let bytes = header[nameRange].prefix { $0 != 0 }
+        return String(decoding: bytes, as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    /// New header with a fresh GUID and no owner (owner/hash are Synapse/Razer ID bookkeeping).
+    static func make(name: String) -> [UInt8] {
+        var h = [UInt8](repeating: 0, count: V4Pro.headerSize)
+        h.replaceSubrange(0..<16, with: guidBytes(UUID()))
+        return withName(name, in: h)
+    }
+
+    static func withName(_ name: String, in header: [UInt8]) -> [UInt8] {
+        var h = header.count == V4Pro.headerSize ? header : make(name: "")
+        var bytes = Array(name.utf8)
+        // Truncate on a character boundary so the firmware never stores half a UTF-8 sequence.
+        if bytes.count > nameRange.count {
+            var s = ""
+            for ch in name where s.utf8.count + String(ch).utf8.count <= nameRange.count { s.append(ch) }
+            bytes = Array(s.utf8)
+        }
+        h.replaceSubrange(nameRange, with: bytes + [UInt8](repeating: 0, count: nameRange.count - bytes.count))
+        return h
+    }
+
+    /// Synapse stores the GUID in Windows (mixed-endian) order: first three fields little-endian.
+    static func guidBytes(_ uuid: UUID) -> [UInt8] {
+        let u = withUnsafeBytes(of: uuid.uuid) { Array($0) }
+        return [u[3], u[2], u[1], u[0], u[5], u[4], u[7], u[6]] + u[8..<16]
+    }
+}

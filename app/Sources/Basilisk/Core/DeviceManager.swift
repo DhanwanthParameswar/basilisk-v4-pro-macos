@@ -58,6 +58,13 @@ final class DeviceManager {
     // Buttons
     var assignments: [MouseButton: ButtonAction] = [:]
 
+    // Onboard memory. Per-profile settings (DPI, polling, scroll wheel, brightness, buttons) are
+    // read from and written to the active profile, so the app always edits what the mouse is using.
+    private(set) var profiles: [OnboardProfile] = []
+    private(set) var activeProfile: UInt8 = V4Pro.store
+    private(set) var storage: OnboardStorage?
+    private(set) var profileBusy = false
+
     // Background
     var windowVisible = false { didSet { rescheduleLiveRefresh() } }
 
@@ -233,7 +240,7 @@ final class DeviceManager {
 
     private func read(_ cmd: RazerCommand) async -> RazerResponse? {
         guard let t = transport, t.supports(cmd.cls) else { return nil }
-        return try? await t.send(cmd)
+        return try? await t.send(V4Pro.retarget(cmd, to: activeProfile))
     }
 
     func refreshAll() async {
@@ -246,6 +253,11 @@ final class DeviceManager {
         // Synapse leaves the mouse in "driver mode" (it streams lighting itself). Without Synapse the
         // on-board effects only render in normal mode, so restore it if needed.
         if let r = await read(V4Pro.deviceMode), r[0] == 0x03 { _ = await read(V4Pro.setDeviceMode(0x00)) }
+
+        // Which profile is live decides where every per-profile read below goes.
+        if let r = await read(V4Pro.activeProfile), (1...UInt8(OnboardProfile.slotCount)).contains(r[0]) {
+            activeProfile = r[0]
+        }
 
         if let r = await read(V4Pro.dpiStages) {
             let parsed = V4Pro.parseStages(r)
@@ -277,11 +289,19 @@ final class DeviceManager {
         for b in MouseButton.allCases {
             if let r = await read(V4Pro.buttonAssignment(b)), let a = V4Pro.parseAssignment(r) { assignments[b] = a }
         }
+        await refreshProfiles()
         await refreshLive()
     }
 
     /// Cheap values that change without the app: battery, charging, active DPI stage.
     func refreshLive() async {
+        // The profile button on the mouse switches profiles without telling us; reload when it does.
+        if !isLoading, !profileBusy, let r = await read(V4Pro.activeProfile),
+           (1...UInt8(OnboardProfile.slotCount)).contains(r[0]), r[0] != activeProfile {
+            activeProfile = r[0]
+            await refreshAll()
+            return
+        }
         if let r = await read(V4Pro.battery) { battery = Int(r[1]) * 100 / 255 }
         if let r = await read(V4Pro.charging) { charging = r[1] != 0 }
         if let r = await read(V4Pro.dpiStages) {
@@ -307,9 +327,10 @@ final class DeviceManager {
     /// Sends a command; on failure runs `revert` and surfaces the error.
     private func write(_ cmds: [RazerCommand], revert: (() -> Void)? = nil) {
         guard let t = transport else { revert?(); return }
+        let profile = activeProfile
         Task {
             do {
-                for c in cmds { _ = try await t.send(c) }
+                for c in cmds { _ = try await t.send(V4Pro.retarget(c, to: profile)) }
             } catch {
                 revert?()
                 lastError = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
@@ -402,4 +423,106 @@ final class DeviceManager {
     }
 
     func action(for b: MouseButton) -> ButtonAction { assignments[b] ?? b.factoryAction }
+
+    // MARK: - Onboard memory
+
+    /// Slots, names, colours and free storage. Class 05 also works over Bluetooth.
+    func refreshProfiles() async {
+        guard let list = await read(V4Pro.profileList) else { return }
+        let ids = V4Pro.parseProfileList(list)
+        var result: [OnboardProfile] = []
+        for id in ids {
+            var color = OnboardProfile.defaultColors[id] ?? .white
+            if let r = await read(V4Pro.profileColor(id)), r[0] == id, r[1] | r[2] | r[3] != 0 {
+                color = RGB(r: r[1], g: r[2], b: r[3])
+            }
+            var header: [UInt8]?
+            if id != 1 { header = await readHeader(id) }
+            result.append(OnboardProfile(id: id, name: header.map(ProfileHeader.name) ?? "", color: color, header: header))
+        }
+        profiles = result
+        if let r = await read(V4Pro.storageInfo) { storage = V4Pro.parseStorage(r) }
+    }
+
+    private func readHeader(_ id: UInt8) async -> [UInt8]? {
+        var bytes: [UInt8] = []
+        for (offset, length) in V4Pro.headerChunks() {
+            guard let r = await read(V4Pro.profileHeader(id, offset: offset, length: length)) else { break }
+            bytes += r.args.dropFirst(5).prefix(length)
+            bytes += [UInt8](repeating: 0, count: max(0, offset + length - bytes.count))
+        }
+        return bytes.count >= ProfileHeader.nameRange.upperBound
+            ? bytes + [UInt8](repeating: 0, count: max(0, V4Pro.headerSize - bytes.count)) : nil
+    }
+
+    func profile(_ id: UInt8) -> OnboardProfile? { profiles.first { $0.id == id } }
+
+    /// Runs a slot operation, reports failure, then re-reads the slots (and settings if the live profile changed).
+    private func profileOperation(_ body: (RazerTransport) async throws -> Void) async {
+        guard let t = transport, !profileBusy else { return }
+        profileBusy = true
+        let before = activeProfile
+        do {
+            try await body(t)
+        } catch {
+            lastError = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+        }
+        if let r = await read(V4Pro.activeProfile), (1...UInt8(OnboardProfile.slotCount)).contains(r[0]) {
+            activeProfile = r[0]
+        }
+        profileBusy = false
+        if activeProfile != before { await refreshAll() } else { await refreshProfiles() }
+    }
+
+    func activateProfile(_ id: UInt8) async {
+        guard id != activeProfile, profile(id) != nil else { return }
+        await profileOperation { t in _ = try await t.send(V4Pro.setActiveProfile(id)) }
+    }
+
+    /// Copies the settings shown in the app (the live profile) into `slot`, creating it if needed.
+    /// Same order Synapse uses when you drop a profile on a slot.
+    func saveCurrentSettings(toSlot slot: UInt8, name: String) async {
+        guard slot != activeProfile, (1...UInt8(OnboardProfile.slotCount)).contains(slot), supportsFullControl else { return }
+        let exists = profile(slot) != nil
+        let writesHeader = slot != 1   // the default profile has no header
+        let header = ProfileHeader.withName(name, in: profile(slot)?.header ?? ProfileHeader.make(name: name))
+        let dpi = stages.indices.contains(activeStage) ? stages[activeStage] : DPIStage(x: 800, y: 800)
+        var settings: [RazerCommand] = [
+            V4Pro.setPollingRate(pollingRate),
+            V4Pro.setSmartReel(smartReel),
+            V4Pro.setScrollMode(scrollMode),
+            V4Pro.setActiveDPI(x: dpi.x, y: dpi.y),
+            V4Pro.setStages(stages, active: activeStage),
+            V4Pro.setBrightness(UInt8(brightness * 255))
+        ]
+        settings += MouseButton.allCases.filter(\.isRemappable).map { V4Pro.setButton($0, action(for: $0)) }
+
+        await profileOperation { t in
+            if !exists { _ = try await t.send(V4Pro.createProfile(slot)) }
+            if writesHeader { try await Self.writeHeader(header, slot: slot, over: t) }
+            for c in settings { _ = try await t.send(V4Pro.retarget(c, to: slot)) }
+        }
+    }
+
+    func renameProfile(_ id: UInt8, to name: String) async {
+        guard id != 1, let p = profile(id) else { return }
+        let header = ProfileHeader.withName(name, in: p.header ?? ProfileHeader.make(name: name))
+        await profileOperation { t in try await Self.writeHeader(header, slot: id, over: t) }
+    }
+
+    /// Frees the slot. The mouse falls back to the default profile if it was live.
+    func deleteProfile(_ id: UInt8) async {
+        guard id != 1, profile(id) != nil else { return }
+        await profileOperation { t in _ = try await t.send(V4Pro.deleteProfile(id)) }
+    }
+
+    /// The final (58-byte) header chunk can come back as "failure" even though it's stored —
+    /// Synapse ignores that too (PROTOCOL.md), so only earlier chunks are fatal.
+    private static func writeHeader(_ header: [UInt8], slot: UInt8, over t: RazerTransport) async throws {
+        let chunks = V4Pro.headerChunks()
+        for (i, (offset, length)) in chunks.enumerated() {
+            let cmd = V4Pro.setProfileHeader(slot, offset: offset, chunk: Array(header[offset..<offset + length]))
+            do { _ = try await t.send(cmd) } catch TransportError.failed where i == chunks.count - 1 {}
+        }
+    }
 }
