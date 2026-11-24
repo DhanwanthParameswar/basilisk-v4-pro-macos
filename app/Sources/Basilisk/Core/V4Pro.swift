@@ -138,6 +138,66 @@ enum V4Pro {
         return ButtonAction(fnId: r[3], data: Array(r.args[5..<min(5 + n, r.args.count)]))
     }
 
+    // MARK: Onboard memory (class 05 profiles, 06 storage) — PROTOCOL.md "Onboard memory"
+    static let profileCount = RazerCommand(0x05, 0x80, size: 1)
+    static let profileList = RazerCommand(0x05, 0x81, size: 0x50)
+    static let activeProfile = RazerCommand(0x05, 0x84, size: 1)
+    static func setActiveProfile(_ id: UInt8) -> RazerCommand { RazerCommand(0x05, 0x04, size: 1, [id]) }
+    static func createProfile(_ id: UInt8) -> RazerCommand { RazerCommand(0x05, 0x02, size: 1, [id]) }
+    static func deleteProfile(_ id: UInt8) -> RazerCommand { RazerCommand(0x05, 0x03, size: 1, [id]) }
+    static func profileColor(_ id: UInt8) -> RazerCommand { RazerCommand(0x05, 0x8C, size: 4, [id]) }
+    static let storageInfo = RazerCommand(0x06, 0x8E, size: 0x50)
+
+    /// Header chunks: `[id, offset(2), total(2)=00fa, data…]`, ≤64 data bytes, size = chunk + 5.
+    static let headerSize = 250
+    static let headerChunk = 64
+    static func profileHeader(_ id: UInt8, offset: Int, length: Int) -> RazerCommand {
+        RazerCommand(0x05, 0x88, size: UInt8(length + 5), [id, hi(offset), lo(offset), hi(headerSize), lo(headerSize)])
+    }
+    static func setProfileHeader(_ id: UInt8, offset: Int, chunk: [UInt8]) -> RazerCommand {
+        RazerCommand(0x05, 0x08, size: UInt8(chunk.count + 5),
+                     [id, hi(offset), lo(offset), hi(headerSize), lo(headerSize)] + chunk)
+    }
+    static func headerChunks() -> [(offset: Int, length: Int)] {
+        stride(from: 0, to: headerSize, by: headerChunk).map { ($0, min(headerChunk, headerSize - $0)) }
+    }
+
+    /// The firmware's reply lists the slots that hold a profile. Synapse reads it as
+    /// `[count, id…]`; on hardware byte 0 looked like the slot maximum, so take any valid id after it.
+    static func parseProfileList(_ r: RazerResponse) -> [UInt8] {
+        var ids: [UInt8] = [1]
+        for b in r.args.dropFirst().prefix(OnboardProfile.slotCount) where (1...UInt8(OnboardProfile.slotCount)).contains(b) && !ids.contains(b) {
+            ids.append(b)
+        }
+        return ids.sorted()
+    }
+
+    /// `[maxId(2), maxMemory(4), available(4), recyclable(4)]`, big-endian.
+    static func parseStorage(_ r: RazerResponse) -> OnboardStorage? {
+        func u32(_ i: Int) -> Int { r.u16(i) << 16 | r.u16(i + 2) }
+        let total = u32(2)
+        guard total > 0 else { return nil }
+        return OnboardStorage(total: total, available: u32(6), recyclable: u32(10))
+    }
+
+    /// Commands whose first argument selects the profile (DPI, polling, scroll wheel, brightness,
+    /// buttons). Synapse's OBM writes exactly these per slot; everything else is device-wide.
+    static func isPerProfile(_ c: RazerCommand) -> Bool {
+        switch (c.cls, c.id & 0x7F) {
+        case (0x00, 0x40), (0x04, 0x05), (0x04, 0x06), (0x02, 0x30), (0x02, 0x17), (0x02, 0x0C),
+             (0x0F, 0x04): true
+        default: false
+        }
+    }
+
+    /// Points a per-profile command at `profile` instead of the default store.
+    static func retarget(_ c: RazerCommand, to profile: UInt8) -> RazerCommand {
+        guard profile != store, isPerProfile(c), !c.args.isEmpty, c.args[0] == store else { return c }
+        var r = c
+        r.args[0] = profile
+        return r
+    }
+
     // MARK: helpers
     static func hi(_ v: Int) -> UInt8 { UInt8((v >> 8) & 0xFF) }
     static func lo(_ v: Int) -> UInt8 { UInt8(v & 0xFF) }

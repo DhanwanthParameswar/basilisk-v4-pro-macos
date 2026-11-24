@@ -1,13 +1,14 @@
 import SwiftUI
 
 enum Pane: String, CaseIterable, Identifiable {
-    case overview, performance, buttons, wheel, lighting, power
+    case overview, performance, buttons, wheel, lighting, power, memory
     var id: String { rawValue }
 
     var title: String {
         switch self {
         case .overview: "Overview"; case .performance: "Performance"; case .buttons: "Buttons"
         case .wheel: "Scroll Wheel"; case .lighting: "Lighting"; case .power: "Power"
+        case .memory: "Onboard Memory"
         }
     }
 
@@ -17,11 +18,12 @@ enum Pane: String, CaseIterable, Identifiable {
         case .overview: "computermouse"; case .performance: "gauge.with.dots.needle.50percent"
         case .buttons: "cursorarrow.click"; case .wheel: "arrow.up.and.down.circle"
         case .lighting: "lightspectrum.horizontal"; case .power: "bolt.circle"
+        case .memory: "memorychip"
         }
     }
 
     /// Panes that need a USB/dongle link (Bluetooth can't change these).
-    var needsFullControl: Bool { self != .overview }
+    var needsFullControl: Bool { self != .overview && self != .memory }
 }
 
 struct RootView: View {
@@ -85,6 +87,7 @@ struct RootView: View {
         case .wheel: WheelPane()
         case .lighting: LightingPane()
         case .power: PowerPane()
+        case .memory: MemoryPane()
         }
     }
 }

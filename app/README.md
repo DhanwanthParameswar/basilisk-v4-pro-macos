@@ -28,6 +28,7 @@ string) and ad-hoc signs it. You can copy the app to /Applications.
 | Scroll Wheel | Tactile / Free-Spin / Precision, which modes the button cycles, acceleration and Smart-Reel with levels | `02:30` `15:0b` `02:16/22` `02:17/23` |
 | Lighting | Click a zone on the mouse or edit all zones; Off/Static/Breathing/Spectrum/Wave/Reactive, colour, wave direction, brightness, idle dimming | `0f:02` `0f:04` `07:13` |
 | Power | Battery and charging, sleep timeout, low-power threshold | `07:80/84` `07:03` `07:01` |
+| Onboard Memory | The 5 profile slots (like Synapse's On-Board Memory): activate, save the active settings into a slot, rename, delete; free flash. The other panes edit whichever profile is active | `05:81/84/04` `05:02/03` `05:08/88` `05:8c` `06:8e` |
 | Menu bar | Battery, stage buttons, polling, scroll mode | — |
 
 All settings are saved **on the mouse**, so they keep working without the app.
@@ -67,7 +68,8 @@ How it stays efficient:
 
 - Over **Bluetooth** the firmware only accepts classes 00, 05 and 10. You get battery, firmware and
   profiles; everything else is shown read-only, with a note to use the cable or dongle.
-- Not exposed (yet): macros, onboard profile management, Hypershift-layer remaps, Perfect 180.
+- Not exposed (yet): macros, Hypershift-layer remaps, Perfect 180. Saving a profile into a slot
+  doesn't copy Hypershift-layer mappings, since the app doesn't read them yet.
   The protocol for all of these is documented in PROTOCOL.md.
 
 ## Verified on hardware (wired, 2026-11-21, firmware 1.02)

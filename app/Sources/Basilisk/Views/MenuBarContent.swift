@@ -23,6 +23,14 @@ struct MenuBarContent: View {
                 if device.isConnected { BatteryBadge(level: device.battery, charging: device.charging).font(.callout) }
             }
 
+            if device.isConnected, device.profiles.count > 1 {
+                Picker("Profile", selection: Binding(get: { device.activeProfile },
+                                                     set: { id in Task { await device.activateProfile(id) } })) {
+                    ForEach(device.profiles) { Text($0.displayName).tag($0.id) }
+                }
+                .disabled(device.profileBusy || device.isLoading)
+            }
+
             if device.supportsFullControl {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Sensitivity").font(.caption).foregroundStyle(.secondary)
