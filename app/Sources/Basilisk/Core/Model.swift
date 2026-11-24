@@ -226,6 +226,18 @@ enum KeyNames {
     /// HID usages for F1–F12 (0x3A–0x45) then F13–F24 (0x68–0x73).
     static let functionKeys: [UInt8] = Array(0x3A...0x45) + Array(0x68...0x73)
 
+    /// Base keys the recorder can assign, grouped for the manual key picker.
+    /// Any of these can be combined with any modifiers, so every combo is buildable
+    /// even when the OS won't let the raw keystroke reach the app (e.g. ⌘⇧4).
+    static let keyGroups: [(String, [UInt8])] = [
+        ("Letters", Array(0x04...0x1D)),
+        ("Numbers", Array(0x1E...0x27)),
+        ("Punctuation", [0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38]),
+        ("Arrows", [0x50, 0x4F, 0x52, 0x51]),
+        ("Editing", [0x28, 0x29, 0x2A, 0x2B, 0x2C]),   // Return Esc Delete Tab Space
+        ("Function", functionKeys),
+    ]
+
     static func describe(modifiers: UInt8, usage: UInt8) -> String {
         var s = ""
         if modifiers & 0x11 != 0 { s += "⌃" }
@@ -242,6 +254,9 @@ enum KeyNames {
         case 0x27: return "0"
         case 0x28: return "Return"; case 0x29: return "Esc"; case 0x2A: return "Delete"
         case 0x2B: return "Tab"; case 0x2C: return "Space"
+        case 0x2D: return "-"; case 0x2E: return "="; case 0x2F: return "["; case 0x30: return "]"
+        case 0x31: return "\\"; case 0x33: return ";"; case 0x34: return "'"; case 0x35: return "`"
+        case 0x36: return ","; case 0x37: return "."; case 0x38: return "/"
         case 0x3A...0x45: return "F\(u - 0x39)"
         case 0x68...0x73: return "F\(u - 0x68 + 13)"
         case 0x4F: return "→"; case 0x50: return "←"; case 0x51: return "↓"; case 0x52: return "↑"
@@ -258,6 +273,7 @@ enum KeyNames {
             32: 0x18, 9: 0x19, 13: 0x1A, 7: 0x1B, 16: 0x1C, 6: 0x1D,
             18: 0x1E, 19: 0x1F, 20: 0x20, 21: 0x21, 23: 0x22, 22: 0x23, 26: 0x24, 28: 0x25, 25: 0x26, 29: 0x27,
             36: 0x28, 53: 0x29, 51: 0x2A, 48: 0x2B, 49: 0x2C,
+            27: 0x2D, 24: 0x2E, 33: 0x2F, 30: 0x30, 42: 0x31, 41: 0x33, 39: 0x34, 50: 0x35, 43: 0x36, 47: 0x37, 44: 0x38,
             122: 0x3A, 120: 0x3B, 99: 0x3C, 118: 0x3D, 96: 0x3E, 97: 0x3F, 98: 0x40, 100: 0x41, 101: 0x42,
             109: 0x43, 103: 0x44, 111: 0x45,
             105: 0x68, 107: 0x69, 113: 0x6A, 106: 0x6B, 64: 0x6C, 79: 0x6D, 80: 0x6E, 90: 0x6F,   // F13–F20 (extended keyboards)
@@ -273,6 +289,41 @@ enum KeyNames {
         if flags.contains(.option) { m |= 0x04 }
         if flags.contains(.command) { m |= 0x08 }
         return m
+    }
+}
+
+// MARK: - System action presets
+
+/// Common macOS actions offered by friendly name. Each is really just a keyboard
+/// shortcut written to the mouse's onboard memory — the app does not intercept or
+/// synthesize anything — so it works only while the system keeps that shortcut's
+/// default binding. Offered purely for convenience so users don't have to know the keys.
+enum SystemAction: String, CaseIterable, Identifiable {
+    case missionControl, appExpose, spaceLeft, spaceRight, spotlight, lookUp
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .missionControl: "Mission Control"
+        case .appExpose:      "App Exposé"
+        case .spaceLeft:      "Move Left a Space"
+        case .spaceRight:     "Move Right a Space"
+        case .spotlight:      "Spotlight Search"
+        case .lookUp:         "Look Up"
+        }
+    }
+
+    /// The default macOS shortcut for the action, as an assignable key binding.
+    var action: ButtonAction {
+        switch self {
+        case .missionControl: .key(modifiers: 0x01, usage: 0x52)  // ⌃↑
+        case .appExpose:      .key(modifiers: 0x01, usage: 0x51)  // ⌃↓
+        case .spaceLeft:      .key(modifiers: 0x01, usage: 0x50)  // ⌃←
+        case .spaceRight:     .key(modifiers: 0x01, usage: 0x4F)  // ⌃→
+        case .spotlight:      .key(modifiers: 0x08, usage: 0x2C)  // ⌘Space
+        case .lookUp:         .key(modifiers: 0x09, usage: 0x07)  // ⌃⌘D
+        }
     }
 }
 

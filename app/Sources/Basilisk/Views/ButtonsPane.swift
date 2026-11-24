@@ -107,6 +107,15 @@ private struct ButtonRow: View {
                             pick(a, current: action)
                         }
                     }
+                    Menu("System Actions") {
+                        Section("Keyboard shortcuts, stored on the mouse") {
+                            ForEach(SystemAction.allCases) { sa in
+                                Toggle(sa.label, isOn: Binding(
+                                    get: { action == sa.action },
+                                    set: { if $0 { device.assign(sa.action, to: button) } }))
+                            }
+                        }
+                    }
                     Divider()
                     Menu("Function Key") {
                         // F13–F24 aren't on Mac keyboards, so they can't be recorded; nothing on macOS
@@ -146,56 +155,85 @@ private struct ButtonRow: View {
     }
 }
 
-/// Captures one key combination. Standard combos are read through a first-responder
-/// view; macOS-reserved combos (⌘⇧3/4/5, etc.) are the WindowServer's, so capturing
-/// them needs a HID-level event tap, which in turn needs Accessibility permission.
+/// Builds any key combination for a button. You can press a combo directly (works for
+/// ordinary shortcuts, and for system-reserved ones like ⌘⇧4 when the HID event tap is
+/// active), or build it by hand with the modifier toggles + key picker — which always
+/// works, needs no permission, and can't be swallowed by the OS since nothing is typed.
 private struct KeyRecorderSheet: View {
     let button: MouseButton
     let done: (ButtonAction?) -> Void
-    @State private var captured: ButtonAction?
+    @State private var modifiers: UInt8 = 0
+    @State private var usage: UInt8 = 0
     @State private var tapActive = false
     @State private var recorder = SystemKeyRecorder()
+
+    private static let modifierChips: [(UInt8, String)] = [(0x01, "⌃"), (0x04, "⌥"), (0x02, "⇧"), (0x08, "⌘")]
 
     var body: some View {
         VStack(spacing: 18) {
             Image(systemName: "keyboard").font(.system(size: 34)).foregroundStyle(.secondary)
-            Text("Press a key combination for \(button.label)").font(.headline)
-            Text(captured?.label ?? "Waiting…")
+            Text("Set a shortcut for \(button.label)").font(.headline)
+
+            Text(usage == 0 ? "Choose a key…" : KeyNames.describe(modifiers: modifiers, usage: usage))
                 .font(.system(.title, design: .rounded).weight(.semibold))
+                .foregroundStyle(usage == 0 ? .secondary : .primary)
                 .frame(minWidth: 200, minHeight: 48)
                 .padding(.horizontal, 16)
                 .glassEffect(in: .capsule)
 
-            if tapActive {
-                Label("System shortcuts like ⌘⇧4 can be recorded.", systemImage: "checkmark.seal")
-                    .font(.caption).foregroundStyle(.secondary)
-            } else {
-                VStack(spacing: 6) {
-                    Text("System-reserved combos (⌘⇧3/4/5, etc.) need Accessibility access to record.")
-                        .font(.caption).foregroundStyle(.secondary).multilineTextAlignment(.center)
-                    Button("Allow in System Settings…") { recorder.requestAccess() }
-                        .font(.caption)
-                    Text("After allowing, reopen this recorder.")
-                        .font(.caption2).foregroundStyle(.tertiary)
+            // Modifier toggles
+            HStack(spacing: 8) {
+                ForEach(Self.modifierChips, id: \.0) { bit, symbol in
+                    modifierChip(bit: bit, symbol: symbol)
                 }
             }
 
+            // Key picker
+            Menu {
+                ForEach(KeyNames.keyGroups, id: \.0) { title, keys in
+                    Section(title) {
+                        ForEach(keys, id: \.self) { u in
+                            Button(KeyNames.name(u)) { usage = u }
+                        }
+                    }
+                }
+            } label: {
+                Label(usage == 0 ? "Choose key" : "Key: \(KeyNames.name(usage))", systemImage: "chevron.down")
+            }
+            .menuStyle(.button)
+
+            Text(tapActive
+                 ? "Tip: you can also just press the combo — system shortcuts included."
+                 : "Tip: you can press ordinary combos directly. Build reserved ones (⌘⇧4, etc.) above.")
+                .font(.caption).foregroundStyle(.secondary).multilineTextAlignment(.center)
+
             HStack {
                 Button("Cancel", role: .cancel) { done(nil) }.keyboardShortcut(.cancelAction)
-                Button("Assign") { done(captured) }
+                Button("Clear") { modifiers = 0; usage = 0 }
+                    .disabled(modifiers == 0 && usage == 0)
+                Button("Assign") { done(.key(modifiers: modifiers, usage: usage)) }
                     .buttonStyle(.glassProminent)
-                    .disabled(captured == nil)
+                    .disabled(usage == 0)
             }
         }
         .padding(28)
         .frame(width: 380)
-        // Fallback for ordinary combos; works with no special permission.
-        .background(KeyCaptureView { captured = $0 })
+        // Live-press path: fills in whatever the OS lets through.
+        .background(KeyCaptureView { if case let .key(m, u) = $0 { modifiers = m; usage = u } })
         .onAppear {
-            recorder.onCapture = { captured = $0 }
+            recorder.onCapture = { if case let .key(m, u) = $0 { modifiers = m; usage = u } }
             tapActive = recorder.start()
         }
         .onDisappear { recorder.stop() }
+    }
+
+    @ViewBuilder
+    private func modifierChip(bit: UInt8, symbol: String) -> some View {
+        let on = modifiers & bit != 0
+        let chip = Button(symbol) { modifiers ^= bit }
+            .font(.system(.title3, design: .rounded))
+            .frame(width: 44, height: 36)
+        if on { chip.buttonStyle(.glassProminent) } else { chip.buttonStyle(.glass) }
     }
 }
 

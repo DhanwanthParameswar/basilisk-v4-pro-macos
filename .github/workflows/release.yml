@@ -1,0 +1,65 @@
+name: Release
+
+# Builds, signs with Developer ID, notarizes, and attaches a zipped Basilisk.app
+# to a GitHub Release whenever you push a version tag (e.g. `git tag v1.2 && git push --tags`).
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch: {}      # also runnable manually from the Actions tab
+
+permissions:
+  contents: write            # needed to create the release
+
+jobs:
+  release:
+    runs-on: macos-15        # bump when the macOS 27 SDK / Xcode is available on a runner
+    steps:
+      - uses: actions/checkout@v4
+
+      # Import the Developer ID Application cert into a throwaway keychain.
+      - name: Install signing certificate
+        env:
+          CERT_P12_BASE64: ${{ secrets.DEVELOPER_ID_CERT_P12_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.DEVELOPER_ID_CERT_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          KEYCHAIN="$RUNNER_TEMP/build.keychain-db"
+          echo "$CERT_P12_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/cert.p12" -P "$CERT_PASSWORD" \
+            -A -t cert -f pkcs12 -k "$KEYCHAIN"
+          security list-keychain -d user -s "$KEYCHAIN" login.keychain-db
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          rm -f "$RUNNER_TEMP/cert.p12"
+
+      # Store notary credentials under a profile build_app.sh will use.
+      - name: Store notary credentials
+        env:
+          NOTARY_APPLE_ID: ${{ secrets.NOTARY_APPLE_ID }}
+          NOTARY_TEAM_ID: ${{ secrets.NOTARY_TEAM_ID }}
+          NOTARY_PASSWORD: ${{ secrets.NOTARY_PASSWORD }}
+        run: |
+          xcrun notarytool store-credentials basilisk-ci \
+            --apple-id "$NOTARY_APPLE_ID" \
+            --team-id "$NOTARY_TEAM_ID" \
+            --password "$NOTARY_PASSWORD"
+
+      - name: Build, sign, notarize
+        working-directory: app
+        env:
+          BASILISK_SIGN_ID: ${{ secrets.SIGN_IDENTITY }}
+          BASILISK_NOTARY_PROFILE: basilisk-ci
+        run: ./build_app.sh
+
+      - name: Package
+        working-directory: app
+        run: /usr/bin/ditto -c -k --keepParent build/Basilisk.app build/Basilisk.zip
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/build/Basilisk.zip
+          generate_release_notes: true
