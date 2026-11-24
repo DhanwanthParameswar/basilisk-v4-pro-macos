@@ -13,9 +13,10 @@ enum Pane: String, CaseIterable, Identifiable {
 
     var symbol: String {
         switch self {
-        case .overview: "computermouse"; case .performance: "gauge.with.dots.needle.67percent"
-        case .buttons: "button.programmable"; case .wheel: "dial.medium"
-        case .lighting: "lightspectrum.horizontal"; case .power: "battery.75percent"
+        // Picked to share a ~15 pt footprint so the sidebar column reads evenly.
+        case .overview: "computermouse"; case .performance: "gauge.with.dots.needle.50percent"
+        case .buttons: "cursorarrow.click"; case .wheel: "arrow.up.and.down.circle"
+        case .lighting: "lightspectrum.horizontal"; case .power: "bolt.circle"
         }
     }
 
@@ -49,10 +50,16 @@ struct RootView: View {
                     DisconnectedView()
                 }
             }
+            // Minimum size belongs to the detail column, not the whole split view: NSSplitView then
+            // derives the window minimum (sidebar + detail) itself and can animate the sidebar in
+            // without fighting a fixed window constraint.
+            .frame(minWidth: 560, minHeight: 520)
             .navigationTitle(pane.title)
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    if device.isLoading {
+                // Only add the item while loading: an always-present but empty item still gets a
+                // Liquid Glass capsule, which flashes in the toolbar while the sidebar animates open.
+                if device.isLoading {
+                    ToolbarItem(placement: .primaryAction) {
                         ProgressView().controlSize(.small)
                     }
                 }

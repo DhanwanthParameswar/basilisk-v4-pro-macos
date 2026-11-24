@@ -1,28 +1,52 @@
 import SwiftUI
 
-/// The mouse artwork painted with the current lighting. Animates only when an effect actually moves
-/// (spectrum / wave / breathing), at 20 fps, and TimelineView pauses it automatically when hidden.
+/// The mouse artwork painted with the current lighting. Animates only when something actually moves:
+/// a spectrum / wave / breathing effect (20 fps) or the wheel rolling for a selected scroll input.
 struct LiveMouse: View {
     @Environment(DeviceManager.self) private var device
     var highlightedZone: LightingZone? = nil
     var onTapZone: ((LightingZone) -> Void)? = nil
+    var highlightedButton: MouseButton? = nil
+    var onTapButton: ((MouseButton) -> Void)? = nil
 
-    private var animated: Bool {
+    private var lightingAnimated: Bool {
         device.brightness > 0.02 && device.effects.values.contains { [.spectrum, .wave, .breathing].contains($0.kind) }
     }
+    /// Wheel spin, eased in and out so selecting / deselecting a scroll input never jumps.
+    @State private var roll = WheelRoll()
+    @State private var settling = false
+    /// The wheel rolls while a scroll input is selected (and briefly while it coasts to a stop);
+    /// that needs full frame rate to look smooth.
+    private var wheelRolling: Bool { highlightedButton?.wheelRoll != nil || settling }
 
     var body: some View {
-        if animated {
-            TimelineView(.animation(minimumInterval: 1 / 20)) { tl in
+        content
+            .onChange(of: highlightedButton?.wheelRoll) { _, dir in
+                let now = Date.timeIntervalSinceReferenceDate
+                roll = roll.retarget(at: now, velocity: (dir ?? 0) * WheelRoll.speed)
+                if dir == nil {
+                    settling = true
+                    Task { try? await Task.sleep(for: .seconds(WheelRoll.settleTime)); settling = false }
+                }
+            }
+    }
+
+    @ViewBuilder private var content: some View {
+        if lightingAnimated || wheelRolling {
+            TimelineView(.animation(minimumInterval: wheelRolling ? nil : 1 / 20)) { tl in
                 mouse(t: tl.date.timeIntervalSinceReferenceDate)
             }
         } else {
-            mouse(t: 0)
+            mouse(t: Date.timeIntervalSinceReferenceDate)
         }
     }
 
+
     private func mouse(t: Double) -> some View {
-        MouseView(ledColors: colors(t: t), highlightedZone: highlightedZone, onTapZone: onTapZone)
+        MouseView(ledColors: colors(t: t), highlightedZone: highlightedZone, highlightedButton: highlightedButton,
+                  onTapZone: onTapZone, onTapButton: onTapButton, wheelTilt: highlightedButton?.wheelTilt ?? 0,
+                  wheelRoll: roll.angle(at: t))
+            .animation(.spring(duration: 0.35, bounce: 0.3), value: highlightedButton?.wheelTilt ?? 0)
     }
 
     private func colors(t: Double) -> [LightingZone: Color] {
@@ -134,5 +158,24 @@ struct OverviewPane: View {
                 }
             }
         }
+    }
+}
+
+/// Wheel rotation with an exponentially eased velocity: retargeting keeps angle and speed continuous,
+/// so the wheel spins up, slows down and stops where it is instead of jumping.
+struct WheelRoll {
+    static let speed = 0.32          // rad/s ≈ 3 ribs a second at the wheel's top
+    static let ease = 5.0            // 1/s: ~0.6 s to reach / lose speed
+    static let settleTime = 1.2      // keep animating this long after a stop request
+
+    var angle0 = 0.0, t0 = 0.0, v0 = 0.0, v1 = 0.0
+
+    func angle(at t: Double) -> Double {
+        let dt = max(0, t - t0)
+        return angle0 + v1 * dt + (v0 - v1) * (1 - exp(-Self.ease * dt)) / Self.ease
+    }
+    func velocity(at t: Double) -> Double { v1 + (v0 - v1) * exp(-Self.ease * max(0, t - t0)) }
+    func retarget(at t: Double, velocity target: Double) -> WheelRoll {
+        WheelRoll(angle0: angle(at: t), t0: t, v0: velocity(at: t), v1: target)
     }
 }

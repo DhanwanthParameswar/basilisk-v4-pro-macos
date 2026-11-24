@@ -36,10 +36,8 @@ struct BasiliskApp: App {
         Window("Basilisk", id: "main") {
             RootView()
                 .environment(Shared.device)
-                .frame(minWidth: 820, minHeight: 560)
         }
         .defaultSize(width: 980, height: 660)
-        .windowToolbarStyle(.unified)
         .commands {
             CommandGroup(replacing: .newItem) {}
         }
@@ -106,3 +104,4 @@ enum IconRenderer {
         }
     }
 }
+

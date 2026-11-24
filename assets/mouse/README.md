@@ -17,6 +17,7 @@ Root attr: `data-selection-group-order="scrollWheel,logo,underglow"`
 | `Top_LED` | scroll-wheel LED + Razer logo LED (fill `#FF00FF` = placeholder) | `0x01` wheel, `0x04` logo |
 | `Bottom_LED` | underglow, **5 sub-shapes `_x31_`…`_x35_`** = LEDs 1–5 | `0x0a` side strip / underglow (5 LEDs) |
 | `Top_Selection`, `Bottom_Selection` | Razer-green `#44D62C` outlines for hover/selection hit areas | — |
+| `Buttons` *(added by Basilisk)* | One invisible closed outline per button face, `data-button` = firmware button id. Razer's asset has no button shapes, and its seam lines are split into segments with hairline gaps, so these were extracted by flood-filling each face in a high-res render and vectorising it. The Hypershift trigger (57) isn't visible from above. | — |
 
 Placeholder colours to replace at runtime: `#FF00FF` (LED fill, `.st5`; `.st2` is a 40%-opacity glow),
 `#00EDFF` (`.st4`, 40% cyan thick stroke — hover glow), `#44D62C` (selection stroke).
