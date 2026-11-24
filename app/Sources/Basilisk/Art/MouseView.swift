@@ -28,19 +28,7 @@ struct MouseView: View, Animatable {
                 ctx.scaleBy(x: fit.scale, y: fit.scale)
 
                 drawScene(in: ctx, scale: fit.scale)
-                // Tilt: clear the wheel's slot, then redraw the wheel rocked inside it.
-                if wheelTilt != 0 {
-                    let slot = ButtonShapes.wheel
-                    let c = CGPoint(x: slot.boundingRect.midX, y: slot.boundingRect.midY)
-                    ctx.fill(slot, with: .color(Color(hex: 0x0B0B0B)))
-                    ctx.drawLayer { layer in
-                        layer.clip(to: slot)
-                        layer.translateBy(x: c.x + wheelTilt * 2.2, y: c.y)
-                        layer.rotate(by: .degrees(wheelTilt * 7))
-                        layer.translateBy(x: -c.x, y: -c.y)
-                        drawScene(in: layer, scale: fit.scale)
-                    }
-                }
+                if wheelTilt != 0 { drawTiltedWheel(in: ctx, scale: fit.scale) }
                 // 3. Selection / hover outline
                 let outlined = hoverZone ?? highlightedZone
                 if let z = outlined {
@@ -56,7 +44,8 @@ struct MouseView: View, Animatable {
                 }
                 if let b = highlightedButton {
                     if let shape = b.shape {
-                        ctx.fill(shape, with: .color(.accentColor.opacity(0.32)))
+                        // Wheel inputs keep just the outline so the wheel (and its tilt) stays readable.
+                        if shape != ButtonShapes.wheel { ctx.fill(shape, with: .color(.accentColor.opacity(0.32))) }
                         ctx.stroke(shape, with: .color(.accentColor),
                                    style: StrokeStyle(lineWidth: 1.8, lineCap: .round, lineJoin: .round))
                     } else if b == .hypershift {
@@ -117,6 +106,45 @@ struct MouseView: View, Animatable {
             let c = ledsOn ? color(for: item.shape) : Color(hex: 0x2A2A2A)
             ctx.fill(item.path, with: .color(c))
         }
+    }
+
+    /// The wheel rocking sideways about its front–back axis, as seen from above: it doesn't rotate on
+    /// screen. Its top surface slides toward the tilt and foreshortens, the far side wall comes into view
+    /// as a dark strip, and the slot behind it shows through on the near side.
+    private func drawTiltedWheel(in ctx: GraphicsContext, scale: CGFloat) {
+        guard let led = MouseArtPaths.items.first(where: { $0.shape.layer == .wheelLED }) else { return }
+        let t = CGFloat(wheelTilt)                       // -1 left … 1 right
+        let wheel = led.path.boundingRect.insetBy(dx: -0.8, dy: -0.6)
+        let squash = 1 - 0.14 * abs(t)                  // cos of a ~30° lean
+        let shift = t * wheel.width * 0.16
+        let surfaceW = wheel.width * squash
+        let surface = CGRect(x: wheel.midX - surfaceW / 2 + shift, y: wheel.minY, width: surfaceW, height: wheel.height)
+        let radius = wheel.width * 0.3
+
+        // Recess of the slot, then the side wall revealed opposite the lean.
+        ctx.fill(Path(roundedRect: wheel.insetBy(dx: -0.6, dy: 0), cornerRadius: radius), with: .color(Color(hex: 0x070707)))
+        let wallW = abs(shift) + (wheel.width - surfaceW) / 2
+        let wall = CGRect(x: t < 0 ? surface.maxX - radius * 0.5 : surface.minX - wallW + radius * 0.5,
+                          y: wheel.minY + 1, width: wallW + radius * 0.5, height: wheel.height - 2)
+        let dark = Color(hex: 0x0E0E0E), lit = Color(hex: 0x2C2C2C)
+        ctx.fill(Path(roundedRect: wall, cornerRadius: radius * 0.8),
+                 with: .linearGradient(Gradient(colors: t < 0 ? [lit, dark] : [dark, lit]),
+                                       startPoint: CGPoint(x: wall.minX, y: wall.midY),
+                                       endPoint: CGPoint(x: wall.maxX, y: wall.midY)))
+
+        // Top surface: the wheel (ribs + LED) squashed toward the lean.
+        ctx.drawLayer { layer in
+            layer.clip(to: Path(roundedRect: surface, cornerRadius: radius * squash))
+            layer.translateBy(x: surface.midX, y: 0)
+            layer.scaleBy(x: squash, y: 1)
+            layer.translateBy(x: -wheel.midX, y: 0)
+            drawScene(in: layer, scale: scale)
+        }
+        // Light falls off on the side leaning away.
+        ctx.fill(Path(roundedRect: surface, cornerRadius: radius * squash),
+                 with: .linearGradient(Gradient(colors: t < 0 ? [.clear, .black.opacity(0.35)] : [.black.opacity(0.35), .clear]),
+                                       startPoint: CGPoint(x: surface.minX, y: surface.midY),
+                                       endPoint: CGPoint(x: surface.maxX, y: surface.midY)))
     }
 
     /// Arrow pointing at a control that's out of view from above (the thumb trigger).
