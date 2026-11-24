@@ -12,24 +12,35 @@ enum ButtonShapes {
 
     static let wheel: Path = faces[.wheelClick]!
 
-    /// The multi-function trigger sits under the thumb and isn't visible from above: point at it instead.
-    static let hypershiftCallout = (from: CGPoint(x: 8, y: 116), to: CGPoint(x: 27, y: 136))
+    /// The multi-function trigger (Hypershift) is on the side wall above the thumb buttons, so it can't
+    /// be seen from above. Mark its spot with a slim capsule hugging the outside of the left edge there
+    /// (the edge runs x 47.75 → 46.5 over y 96 → 111 in the artwork).
+    static let hypershiftMarker: Path = {
+        let length: CGFloat = 14, width: CGFloat = 2.4
+        let capsule = Path(roundedRect: CGRect(x: -width / 2, y: -length / 2, width: width, height: length),
+                           cornerRadius: width / 2)
+        let tilt = atan2(-1.25, 15.0)                    // follow the edge's slope
+        return capsule
+            .applying(CGAffineTransform(rotationAngle: -tilt))
+            .applying(CGAffineTransform(translationX: 45.5, y: 103.5))
+    }()
 }
 
 extension MouseButton {
-    /// The part of the mouse this button lives on (nil when it can't be seen from above).
+    /// The part of the mouse this button lives on.
     var shape: Path? {
         switch self {
         case .wheelClick, .wheelUp, .wheelDown, .tiltLeft, .tiltRight: ButtonShapes.wheel
+        case .hypershift: ButtonShapes.hypershiftMarker
         default: ButtonShapes.faces[self]
         }
     }
 
-    /// Direction cue drawn on the wheel for scroll inputs (radians, 0 = right).
-    var wheelArrow: Double? {
+    /// Roll direction of the wheel for scroll inputs: -1 rolls the top surface forward (up), 1 back (down).
+    var wheelRoll: Double? {
         switch self {
-        case .wheelUp: -.pi / 2
-        case .wheelDown: .pi / 2
+        case .wheelUp: -1
+        case .wheelDown: 1
         default: nil
         }
     }
@@ -44,6 +55,6 @@ extension MouseButton {
     }
 
     /// Hit-test order: small parts first so they win over the large click surfaces around them.
-    static let hitOrder: [MouseButton] = [.profile, .scrollMode, .sensitivity, .aiPrompt,
+    static let hitOrder: [MouseButton] = [.hypershift, .profile, .scrollMode, .sensitivity, .aiPrompt,
                                           .forward, .back, .wheelClick, .left, .right]
 }
