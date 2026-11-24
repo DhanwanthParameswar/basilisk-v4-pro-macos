@@ -49,6 +49,10 @@ struct RootView: View {
                     DisconnectedView()
                 }
             }
+            // Minimum size belongs to the detail column, not the whole split view: NSSplitView then
+            // derives the window minimum (sidebar + detail) itself and can animate the sidebar in
+            // without fighting a fixed window constraint.
+            .frame(minWidth: 560, minHeight: 520)
             .navigationTitle(pane.title)
             .toolbar {
                 // Only add the item while loading: an always-present but empty item still gets a
