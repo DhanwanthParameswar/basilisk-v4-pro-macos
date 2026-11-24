@@ -223,6 +223,9 @@ enum ButtonAction: Hashable, Sendable {
 // MARK: - Keyboard key naming (HID usage page 7)
 
 enum KeyNames {
+    /// HID usages for F1–F12 (0x3A–0x45) then F13–F24 (0x68–0x73).
+    static let functionKeys: [UInt8] = Array(0x3A...0x45) + Array(0x68...0x73)
+
     static func describe(modifiers: UInt8, usage: UInt8) -> String {
         var s = ""
         if modifiers & 0x11 != 0 { s += "⌃" }
@@ -240,6 +243,7 @@ enum KeyNames {
         case 0x28: return "Return"; case 0x29: return "Esc"; case 0x2A: return "Delete"
         case 0x2B: return "Tab"; case 0x2C: return "Space"
         case 0x3A...0x45: return "F\(u - 0x39)"
+        case 0x68...0x73: return "F\(u - 0x68 + 13)"
         case 0x4F: return "→"; case 0x50: return "←"; case 0x51: return "↓"; case 0x52: return "↑"
         case 0x0: return "None"
         default: return String(format: "Key 0x%02X", u)
@@ -256,6 +260,7 @@ enum KeyNames {
             36: 0x28, 53: 0x29, 51: 0x2A, 48: 0x2B, 49: 0x2C,
             122: 0x3A, 120: 0x3B, 99: 0x3C, 118: 0x3D, 96: 0x3E, 97: 0x3F, 98: 0x40, 100: 0x41, 101: 0x42,
             109: 0x43, 103: 0x44, 111: 0x45,
+            105: 0x68, 107: 0x69, 113: 0x6A, 106: 0x6B, 64: 0x6C, 79: 0x6D, 80: 0x6E, 90: 0x6F,   // F13–F20 (extended keyboards)
             124: 0x4F, 123: 0x50, 125: 0x51, 126: 0x52
         ]
         return map[code]
