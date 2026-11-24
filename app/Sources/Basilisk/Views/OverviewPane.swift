@@ -6,6 +6,8 @@ struct LiveMouse: View {
     @Environment(DeviceManager.self) private var device
     var highlightedZone: LightingZone? = nil
     var onTapZone: ((LightingZone) -> Void)? = nil
+    var highlightedButton: MouseButton? = nil
+    var onTapButton: ((MouseButton) -> Void)? = nil
 
     private var animated: Bool {
         device.brightness > 0.02 && device.effects.values.contains { [.spectrum, .wave, .breathing].contains($0.kind) }
@@ -22,7 +24,8 @@ struct LiveMouse: View {
     }
 
     private func mouse(t: Double) -> some View {
-        MouseView(ledColors: colors(t: t), highlightedZone: highlightedZone, onTapZone: onTapZone)
+        MouseView(ledColors: colors(t: t), highlightedZone: highlightedZone, highlightedButton: highlightedButton,
+                  onTapZone: onTapZone, onTapButton: onTapButton)
     }
 
     private func colors(t: Double) -> [LightingZone: Color] {

@@ -6,11 +6,12 @@ struct MouseView: View {
     var ledColors: [LightingZone: Color] = [:]
     var ledsOn = true
     var highlightedZone: LightingZone? = nil
-    var highlightedPoint: CGPoint? = nil
-    var markers: [CGPoint] = []
+    var highlightedButton: MouseButton? = nil
     var onTapZone: ((LightingZone) -> Void)? = nil
+    var onTapButton: ((MouseButton) -> Void)? = nil
 
     @State private var hoverZone: LightingZone?
+    @State private var hoverButton: MouseButton?
 
     var body: some View {
         GeometryReader { geo in
@@ -43,29 +44,33 @@ struct MouseView: View {
                                    style: StrokeStyle(lineWidth: 2.2, lineCap: .round, lineJoin: .round))
                     }
                 }
-                // 4. Button markers
-                for p in markers {
-                    let r: CGFloat = 4.5
-                    ctx.fill(Path(ellipseIn: CGRect(x: p.x - r, y: p.y - r, width: r * 2, height: r * 2)),
-                             with: .color(.white.opacity(0.85)))
+                // 4. Buttons: hover hint, then the selected part
+                if let b = hoverButton, b.shape != highlightedButton?.shape {
+                    ctx.stroke(b.shape, with: .color(.white.opacity(0.55)),
+                               style: StrokeStyle(lineWidth: 1.2, lineCap: .round, lineJoin: .round))
                 }
-                if let p = highlightedPoint {
-                    let r: CGFloat = 7
-                    let ring = Path(ellipseIn: CGRect(x: p.x - r, y: p.y - r, width: r * 2, height: r * 2))
-                    ctx.fill(ring, with: .color(.accentColor))
-                    ctx.stroke(ring, with: .color(.white), lineWidth: 1.5)
+                if let b = highlightedButton {
+                    ctx.fill(b.shape, with: .color(.accentColor.opacity(0.32)))
+                    ctx.stroke(b.shape, with: .color(.accentColor),
+                               style: StrokeStyle(lineWidth: 1.8, lineCap: .round, lineJoin: .round))
+                    if let angle = b.wheelArrow { drawArrow(angle: angle, in: ctx) }
                 }
             }
             .contentShape(Rectangle())
             .onContinuousHover { phase in
-                guard onTapZone != nil else { return }
+                guard onTapZone != nil || onTapButton != nil else { return }
                 switch phase {
-                case .active(let loc): hoverZone = zone(at: loc, fit: fit)
-                case .ended: hoverZone = nil
+                case .active(let loc):
+                    hoverZone = zone(at: loc, fit: fit)
+                    hoverButton = button(at: loc, fit: fit)
+                case .ended:
+                    hoverZone = nil
+                    hoverButton = nil
                 }
             }
             .onTapGesture { loc in
                 if let z = zone(at: loc, fit: fit) { onTapZone?(z) }
+                if let b = button(at: loc, fit: fit) { onTapButton?(b) }
             }
             .accessibilityElement()
             .accessibilityLabel("Razer Basilisk V4 Pro")
@@ -84,6 +89,26 @@ struct MouseView: View {
     private func color(for s: ArtShape) -> Color {
         guard let z = s.zone else { return .clear }
         return ledColors[z] ?? RGB.razerGreen.color
+    }
+
+    /// Chevron on the wheel showing scroll / tilt direction.
+    private func drawArrow(angle: Double, in ctx: GraphicsContext) {
+        let c = ButtonShapes.wheel.boundingRect
+        let center = CGPoint(x: c.midX, y: c.midY)
+        let tip = CGPoint(x: center.x + cos(angle) * 9, y: center.y + sin(angle) * 9)
+        var arrow = Path()
+        for side in [-1.0, 1.0] {
+            let a = angle + .pi + side * 0.6
+            arrow.move(to: CGPoint(x: tip.x + cos(a) * 6, y: tip.y + sin(a) * 6))
+            arrow.addLine(to: tip)
+        }
+        ctx.stroke(arrow, with: .color(.white), style: StrokeStyle(lineWidth: 2.2, lineCap: .round, lineJoin: .round))
+    }
+
+    private func button(at point: CGPoint, fit: (origin: CGPoint, scale: CGFloat)) -> MouseButton? {
+        guard onTapButton != nil else { return nil }
+        let p = CGPoint(x: (point.x - fit.origin.x) / fit.scale, y: (point.y - fit.origin.y) / fit.scale)
+        return MouseButton.hitOrder.first { $0.shape.contains(p) }
     }
 
     private func zone(at point: CGPoint, fit: (origin: CGPoint, scale: CGFloat)) -> LightingZone? {

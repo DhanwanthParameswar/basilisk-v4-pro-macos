@@ -122,28 +122,12 @@ enum MouseButton: UInt8, CaseIterable, Identifiable, Sendable {
         case .left, .right, .wheelClick: "Primary"
         case .back, .forward, .hypershift, .aiPrompt: "Side"
         case .wheelUp, .wheelDown, .tiltLeft, .tiltRight, .scrollMode: "Scroll Wheel"
-        case .profile, .sensitivity: "Top & Bottom"
+        case .profile, .sensitivity: "Top"
         }
     }
 
     /// Left click can't be remapped (so you can never lock yourself out).
     var isRemappable: Bool { self != .left }
-
-    /// Approximate location on the artwork (200×320 canvas) for the callout dot.
-    var anchor: CGPoint? {
-        switch self {
-        case .left: CGPoint(x: 82, y: 100)
-        case .right: CGPoint(x: 152, y: 92)
-        case .wheelClick, .wheelUp, .wheelDown, .tiltLeft, .tiltRight: CGPoint(x: 118, y: 96)
-        case .scrollMode: CGPoint(x: 118, y: 139)
-        case .sensitivity: CGPoint(x: 118, y: 156)
-        case .forward: CGPoint(x: 52, y: 168)
-        case .back: CGPoint(x: 52, y: 200)
-        case .hypershift: CGPoint(x: 47, y: 128)
-        case .aiPrompt: CGPoint(x: 46, y: 146)
-        case .profile: nil
-        }
-    }
 
     var factoryAction: ButtonAction {
         switch self {

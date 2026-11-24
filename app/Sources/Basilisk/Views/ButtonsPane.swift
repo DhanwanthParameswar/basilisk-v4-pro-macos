@@ -6,20 +6,30 @@ struct ButtonsPane: View {
     @State private var selected: MouseButton? = .back
     @State private var recording: MouseButton?
     @State private var clutchFor: MouseButton?
+    /// Rows sliding under the pointer while we scroll to a clicked part must not steal the selection.
+    @State private var ignoreRowHoverUntil = Date.distantPast
 
     private var groups: [(String, [MouseButton])] {
-        let order = ["Primary", "Side", "Scroll Wheel", "Top & Bottom"]
+        let order = ["Primary", "Side", "Scroll Wheel", "Top"]
         return order.map { g in (g, MouseButton.allCases.filter { $0.group == g }) }
     }
 
     var body: some View {
+        ScrollViewReader { proxy in
         HStack(alignment: .top, spacing: 0) {
-            MouseView(ledColors: device.effects.mapValues(\.previewColor),
-                      highlightedPoint: selected?.anchor,
-                      markers: MouseButton.allCases.compactMap(\.anchor))
-                .frame(width: 210, height: 336)
-                .padding(24)
-                .animation(.snappy, value: selected)
+            VStack(spacing: 12) {
+                LiveMouse(highlightedButton: selected, onTapButton: { b in
+                    selected = b
+                    ignoreRowHoverUntil = .now.addingTimeInterval(0.8)
+                    withAnimation(.snappy) { proxy.scrollTo(b, anchor: .center) }
+                })
+                    .frame(width: 210, height: 336)
+                Text("Click a part of the mouse to find its button.")
+                    .font(.caption).foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .frame(width: 180)
+            }
+            .padding(24)
 
             Form {
                 if !device.supportsFullControl {
@@ -30,9 +40,10 @@ struct ButtonsPane: View {
                         ForEach(buttons) { b in
                             ButtonRow(button: b, isSelected: selected == b,
                                       onRecord: { recording = b }, onClutch: { clutchFor = b })
+                                .id(b)
                                 .contentShape(Rectangle())
                                 .onTapGesture { selected = b }
-                                .onHover { if $0 { selected = b } }
+                                .onHover { if $0, Date.now > ignoreRowHoverUntil { selected = b } }
                         }
                     }
                 }
@@ -47,6 +58,7 @@ struct ButtonsPane: View {
                 }
             }
             .formStyle(.grouped)
+        }
         }
         .disabled(!device.supportsFullControl)
         .sheet(item: $recording) { b in
