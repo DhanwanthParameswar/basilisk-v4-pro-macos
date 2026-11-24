@@ -666,6 +666,7 @@
 	<!-- Added for Basilisk (not in Razer's asset): one closed outline per button face, following the
 	     drawing's own seam lines. data-button = firmware button id. Invisible; used for highlights and hit-testing.
 	     The multi-function trigger (Hypershift, id 57) is under the thumb and not visible from above. -->
+	<path id="Button_wheel" data-button="3" fill="none" d="M106.5,67.5 L114.5,67.5 C116.7,67.5,118.5,69.3,118.5,71.5 L118.5,113.5 C118.5,115.7,116.7,117.5,114.5,117.5 L106.5,117.5 C104.3,117.5,102.5,115.7,102.5,113.5 L102.5,71.5 C102.5,69.3,104.3,67.5,106.5,67.5Z"/>
 	<path id="Button_left" data-button="1" fill="none" d="M97.5,36.1 L99.8,36.4 L100.8,37.2 L101.1,38.1 L101.1,153.5 L100.8,155.4 L99.6,158 L98.8,159.2 L96,161.6 L67.2,175.8 L64.6,176 L63.4,175.5 L62.4,174.5 L61.6,172.4 L58.8,158.9 L56.9,148.2 L55.5,137.4 L54.6,127.4 L54.4,119.9 L54.6,101.5 L55.4,91.5 L56.8,80.2 L68.8,74.5 L70.1,73.6 L71.6,71.9 L72.4,70.1 L72.5,69 L72.9,69 L73,68.6 L77.1,46.8 L77.1,45.5 L87.9,40.6 L95.9,36.5Z"/>
 	<path id="Button_right" data-button="2" fill="none" d="M123.4,28.6 L125,28.6 L126.4,29 L143.5,37.8 L153.8,42.5 L155.5,43.6 L156.6,44.8 L157.5,46.6 L160.8,63.5 L162.2,75.6 L163,92.8 L162.5,106 L160.8,121 L159.8,127 L159.1,129 L158,130.9 L156.2,132.5 L149.9,135.6 L126.4,147 L123.8,146.9 L122.2,145.8 L121.8,144.8 L121.6,30.4 L121.9,29.5 L122.5,28.9Z"/>
 	<path id="Button_profile" data-button="14" fill="none" d="M73.4,47.4 L74.8,47.4 L74.8,49 L72.5,61.4 L70.4,70.9 L69.4,72.2 L68.1,73.1 L58.5,77.8 L57.1,77.8 L57.1,75.9 L61.6,53.9 L63.9,51.6Z"/>

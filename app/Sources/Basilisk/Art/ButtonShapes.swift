@@ -1,8 +1,8 @@
 import SwiftUI
 
 /// Where each physical button is on the artwork. The faces come from the `Buttons` layer added to
-/// `assets/mouse/basilisk_v4_pro_lighting.svg` (Razer's asset has none); the wheel uses the artwork's
-/// own selection outline.
+/// `assets/mouse/basilisk_v4_pro_lighting.svg` (Razer's asset has none). The wheel's face is the ribbed
+/// wheel itself, not Razer's padded selection box.
 enum ButtonShapes {
     static let faces: [MouseButton: Path] = Dictionary(uniqueKeysWithValues:
         MouseArtPaths.items.compactMap { item in
@@ -10,7 +10,7 @@ enum ButtonShapes {
             return (b, item.path)
         })
 
-    static let wheel: Path = MouseArtPaths.items.first { $0.shape.layer == .wheelSelect }!.path
+    static let wheel: Path = faces[.wheelClick]!
 
     /// The multi-function trigger sits under the thumb and isn't visible from above: point at it instead.
     static let hypershiftCallout = (from: CGPoint(x: 8, y: 116), to: CGPoint(x: 27, y: 136))
