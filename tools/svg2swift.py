@@ -3,7 +3,7 @@
 
 Output: app/Sources/Basilisk/Art/MouseArtwork.swift with one ArtShape per SVG element,
 normalised to absolute M/L/C/Z commands with transforms baked in, tagged by layer
-(body / LED zones / selection outlines) so the app can recolour and hit-test them.
+(body / LED zones / selection outlines / button faces) so the app can recolour and hit-test them.
 """
 import re, sys, xml.etree.ElementTree as ET
 
@@ -137,8 +137,10 @@ def fmt(ops):
 root = ET.fromstring(raw)
 shapes = []
 
-def layer_for(groups, el_id, ops):
+def layer_for(groups, el_id, ops, el=None):
     g = set(groups)
+    if "Buttons" in g:   # Basilisk's added layer: index = firmware button id
+        return "button", int(el.get("data-button"))
     cy = (bbox(ops)[1] + bbox(ops)[3]) / 2
     if "Bottom_LED" in g or "Bottom_Selection" in g:
         kind = "underglowLED" if "Bottom_LED" in g else "underglowSelect"
@@ -160,7 +162,7 @@ def walk(el, groups):
     if not ops: return
     st = resolve(el)
     if st.get("display") == "none": return
-    layer, idx = layer_for(groups, el.get("id"), ops)
+    layer, idx = layer_for(groups, el.get("id"), ops, el)
     fill = color(st.get("fill", "#000000" if tag != "path" or "fill" not in st else st.get("fill")))
     if st.get("fill") == "none": fill = None
     shapes.append(dict(layer=layer, index=idx, fill=fill, stroke=color(st.get("stroke")),
@@ -171,7 +173,7 @@ walk(root, [])
 
 # body first, then LEDs, then selection outlines (paint order)
 order = {"body": 0}
-shapes.sort(key=lambda s: order.get(s["layer"], 1 if s["layer"].endswith("LED") else 2))
+shapes.sort(key=lambda s: order.get(s["layer"], 1 if s["layer"].endswith("LED") else (3 if s["layer"] == "button" else 2)))
 
 def hx(v): return "nil" if v is None else f"0x{v:06X}"
 lines = [

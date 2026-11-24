@@ -662,4 +662,17 @@
 	<path class="st13 selection" data-row="4" data-col="2" data-selection-group="logo" d="M135.7,268.9H86.6c-2.2,0-4-1.8-4-4v-49.1c0-2.2,1.8-4,4-4h49.1c2.2,0,4,1.8,4,4v49.1
 		C139.7,267.1,137.9,268.9,135.7,268.9z"/>
 </g>
+<g id="Buttons">
+	<!-- Added for Basilisk (not in Razer's asset): one closed outline per button face, following the
+	     drawing's own seam lines. data-button = firmware button id. Invisible; used for highlights and hit-testing.
+	     The multi-function trigger (Hypershift, id 57) is under the thumb and not visible from above. -->
+	<path id="Button_left" data-button="1" fill="none" d="M97.5,36.1 L99.8,36.4 L100.8,37.2 L101.1,38.1 L101.1,153.5 L100.8,155.4 L99.6,158 L98.8,159.2 L96,161.6 L67.2,175.8 L64.6,176 L63.4,175.5 L62.4,174.5 L61.6,172.4 L58.8,158.9 L56.9,148.2 L55.5,137.4 L54.6,127.4 L54.4,119.9 L54.6,101.5 L55.4,91.5 L56.8,80.2 L68.8,74.5 L70.1,73.6 L71.6,71.9 L72.4,70.1 L72.5,69 L72.9,69 L73,68.6 L77.1,46.8 L77.1,45.5 L87.9,40.6 L95.9,36.5Z"/>
+	<path id="Button_right" data-button="2" fill="none" d="M123.4,28.6 L125,28.6 L126.4,29 L143.5,37.8 L153.8,42.5 L155.5,43.6 L156.6,44.8 L157.5,46.6 L160.8,63.5 L162.2,75.6 L163,92.8 L162.5,106 L160.8,121 L159.8,127 L159.1,129 L158,130.9 L156.2,132.5 L149.9,135.6 L126.4,147 L123.8,146.9 L122.2,145.8 L121.8,144.8 L121.6,30.4 L121.9,29.5 L122.5,28.9Z"/>
+	<path id="Button_profile" data-button="14" fill="none" d="M73.4,47.4 L74.8,47.4 L74.8,49 L72.5,61.4 L70.4,70.9 L69.4,72.2 L68.1,73.1 L58.5,77.8 L57.1,77.8 L57.1,75.9 L61.6,53.9 L63.9,51.6Z"/>
+	<path id="Button_scrollMode" data-button="106" fill="none" d="M106.9,125.5 L116.1,125.5 L116.8,126 L116.9,136.2 L116.5,136.8 L116,136.8 L107.1,136.9 L106.4,136.6 L106.1,136 L106.1,126Z"/>
+	<path id="Button_sensitivity" data-button="96" fill="none" d="M106.8,141.6 L116.5,141.8 L116.5,142.5 L116.8,142.6 L116.6,150.1 L113.4,152 L108.2,154.8 L106.5,154.8 L106.1,154.4 L106.1,142.1Z"/>
+	<path id="Button_aiPrompt" data-button="128" fill="none" d="M45.4,115.6 L46.9,115.6 L47,130.2 L47.4,135.6 L46.9,144.1 L45.9,144.1 L45.1,143.8 L44.1,141.9 L43.9,141.9 L44.1,116.8Z"/>
+	<path id="Button_forward" data-button="5" fill="none" d="M46.5,144.6 L47.9,144.6 L48,145.2 L49.1,157.9 L50.4,166.5 L50.2,170.4 L49.1,173.8 L49.1,174.1 L47.8,174.1 L47.4,173.6 L46.9,172.5 L46.6,170.1 L45.6,154.8 L45.8,147.4 L46.1,145.1Z"/>
+	<path id="Button_back" data-button="4" fill="none" d="M49,175.6 L50.4,175.6 L50.5,176 L52.4,190.9 L54.4,200.8 L54.4,203.1 L52.6,203 L51.2,201.9 L49.6,199 L47.5,186.9 L47.1,181.5 L48.4,176.5Z"/>
+</g>
 </svg>

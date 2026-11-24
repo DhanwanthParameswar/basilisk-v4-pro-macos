@@ -25,7 +25,8 @@ struct LiveMouse: View {
 
     private func mouse(t: Double) -> some View {
         MouseView(ledColors: colors(t: t), highlightedZone: highlightedZone, highlightedButton: highlightedButton,
-                  onTapZone: onTapZone, onTapButton: onTapButton)
+                  onTapZone: onTapZone, onTapButton: onTapButton, wheelTilt: highlightedButton?.wheelTilt ?? 0)
+            .animation(.spring(duration: 0.35, bounce: 0.3), value: highlightedButton?.wheelTilt ?? 0)
     }
 
     private func colors(t: Double) -> [LightingZone: Color] {

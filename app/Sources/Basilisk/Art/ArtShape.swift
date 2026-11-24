@@ -6,10 +6,12 @@ struct ArtShape: Sendable {
         case body
         case wheelLED, logoLED, underglowLED
         case wheelSelect, logoSelect, underglowSelect
+        /// Button face outline (Basilisk's added `Buttons` layer); `index` is the firmware button id.
+        case button
     }
 
     let layer: Layer
-    let index: Int          // underglow LED number 1…5
+    let index: Int          // underglow LED number 1…5, or firmware button id for `.button`
     let fill: UInt32?
     let stroke: UInt32?
     let strokeWidth: CGFloat
@@ -21,7 +23,7 @@ struct ArtShape: Sendable {
         case .wheelLED, .wheelSelect: .wheel
         case .logoLED, .logoSelect: .logo
         case .underglowLED, .underglowSelect: .underglow
-        case .body: nil
+        case .body, .button: nil
         }
     }
     var isLED: Bool { layer == .wheelLED || layer == .logoLED || layer == .underglowLED }
