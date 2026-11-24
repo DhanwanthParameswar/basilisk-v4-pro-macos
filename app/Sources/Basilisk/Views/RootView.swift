@@ -51,8 +51,10 @@ struct RootView: View {
             }
             .navigationTitle(pane.title)
             .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    if device.isLoading {
+                // Only add the item while loading: an always-present but empty item still gets a
+                // Liquid Glass capsule, which flashes in the toolbar while the sidebar animates open.
+                if device.isLoading {
+                    ToolbarItem(placement: .primaryAction) {
                         ProgressView().controlSize(.small)
                     }
                 }
