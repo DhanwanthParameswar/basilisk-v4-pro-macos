@@ -13,9 +13,10 @@ enum Pane: String, CaseIterable, Identifiable {
 
     var symbol: String {
         switch self {
-        case .overview: "computermouse"; case .performance: "gauge.with.dots.needle.67percent"
-        case .buttons: "button.programmable"; case .wheel: "dial.medium"
-        case .lighting: "lightspectrum.horizontal"; case .power: "battery.75percent"
+        // Picked to share a ~15 pt footprint so the sidebar column reads evenly.
+        case .overview: "computermouse"; case .performance: "gauge.with.dots.needle.50percent"
+        case .buttons: "cursorarrow.click"; case .wheel: "arrow.up.and.down.circle"
+        case .lighting: "lightspectrum.horizontal"; case .power: "bolt.circle"
         }
     }
 

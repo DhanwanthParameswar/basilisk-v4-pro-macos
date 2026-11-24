@@ -9,15 +9,8 @@ struct PowerPane: View {
         Form {
             Section {
                 HStack(spacing: 16) {
-                    Gauge(value: Double(device.battery ?? 0), in: 0...100) {
-                        EmptyView()
-                    } currentValueLabel: {
-                        Image(systemName: device.charging ? "bolt.fill" : "battery.75percent")
-                    }
-                    .gaugeStyle(.accessoryCircularCapacity)
-                    .tint((device.battery ?? 100) <= 15 ? .red : .green)
-                    .scaleEffect(1.3)
-                    .frame(width: 64, height: 64)
+                    BatteryRing(level: device.battery, charging: device.charging)
+                        .frame(width: 60, height: 60)
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(device.battery.map { "\($0)%" } ?? "—")
@@ -69,5 +62,32 @@ struct PowerPane: View {
         .onAppear { sleep = Double(device.sleepMinutes); lowPower = Double(device.lowPowerPercent) }
         .onChange(of: device.sleepMinutes) { _, v in sleep = Double(v) }
         .onChange(of: device.lowPowerPercent) { _, v in lowPower = Double(v) }
+    }
+}
+
+/// Battery level ring drawn at its real size (no scaled widget gauge), with a glyph matching the level.
+private struct BatteryRing: View {
+    let level: Int?
+    let charging: Bool
+
+    private var fraction: Double { Double(level ?? 0) / 100 }
+    private var tint: Color { (level ?? 100) <= 15 && !charging ? .red : .green }
+
+    var body: some View {
+        ZStack {
+            Circle().stroke(tint.opacity(0.2), lineWidth: 6)
+            Circle()
+                .trim(from: 0, to: fraction)
+                .stroke(tint, style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+            Image(systemName: charging ? "bolt.fill" : BatteryBadge(level: level, charging: false).symbol)
+                .font(.system(size: 17, weight: .medium))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(charging ? tint : .primary)
+        }
+        .padding(3)
+        .animation(.smooth, value: fraction)
+        .accessibilityElement()
+        .accessibilityLabel(level.map { "Battery \($0) percent" } ?? "Battery unknown")
     }
 }
