@@ -157,6 +157,6 @@ enum MouseArtwork {
         ArtShape(layer: .button, index: 96, fill: nil, stroke: nil, strokeWidth: 0, opacity: 1, d: "M106.8,141.6L116.5,141.8L116.5,142.5L116.8,142.6L116.6,150.1L113.4,152L108.2,154.8L106.5,154.8L106.1,154.4L106.1,142.1Z"),
         ArtShape(layer: .button, index: 128, fill: nil, stroke: nil, strokeWidth: 0, opacity: 1, d: "M45.4,115.6L46.9,115.6L47,130.2L47.4,135.6L46.9,144.1L45.9,144.1L45.1,143.8L44.1,141.9L43.9,141.9L44.1,116.8Z"),
         ArtShape(layer: .button, index: 5, fill: nil, stroke: nil, strokeWidth: 0, opacity: 1, d: "M46.5,144.6L47.9,144.6L48,145.2L49.1,157.9L50.4,166.5L50.2,170.4L49.1,173.8L49.1,174.1L47.8,174.1L47.4,173.6L46.9,172.5L46.6,170.1L45.6,154.8L45.8,147.4L46.1,145.1Z"),
-        ArtShape(layer: .button, index: 4, fill: nil, stroke: nil, strokeWidth: 0, opacity: 1, d: "M49,175.6L50.4,175.6L50.5,176L52.4,190.9L54.4,200.8L54.4,203.1L52.6,203L51.2,201.9L49.6,199L47.5,186.9L47.1,181.5L48.4,176.5Z"),
+        ArtShape(layer: .button, index: 4, fill: nil, stroke: nil, strokeWidth: 0, opacity: 1, d: "M47.1,181.5L48.4,176.5L49,175.6L50.4,175.6L52.6,178.6L57.4,201.2L57.1,204.8L56.5,205.1L55.5,205.1L55,205L51.2,201.9L50.1,200.2L49.1,197L47.1,183.9Z"),
     ]
 }

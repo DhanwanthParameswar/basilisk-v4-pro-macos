@@ -121,8 +121,8 @@ enum MouseButton: UInt8, CaseIterable, Identifiable, Sendable {
         switch self {
         case .left, .right, .wheelClick: "Primary"
         case .back, .forward, .hypershift, .aiPrompt: "Side"
-        case .wheelUp, .wheelDown, .tiltLeft, .tiltRight, .scrollMode: "Scroll Wheel"
-        case .profile, .sensitivity: "Top"
+        case .wheelUp, .wheelDown, .tiltLeft, .tiltRight: "Scroll Wheel"
+        case .profile, .sensitivity, .scrollMode: "Top"
         }
     }
 
