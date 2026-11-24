@@ -67,6 +67,7 @@ final class DeviceManager {
     private var ble: BLETransport?
     private var liveTimer: Timer?
     private var bleFallbackTask: Task<Void, Never>?
+    private var dongleRetryTask: Task<Void, Never>?
 
     var kind: TransportKind? {
         if case .connected(let k) = connection { return k }
@@ -148,6 +149,25 @@ final class DeviceManager {
             if kind == .dongle, transport == nil {
                 connection = .unreachable("HyperSpeed dongle found, but the mouse isn't answering. Turn it on or switch it to 2.4 GHz.")
             }
+            if kind == .dongle { scheduleDongleRetry() }
+        }
+    }
+
+    /// The dongle stays enumerated while the mouse is off, asleep or on Bluetooth, so waking the
+    /// mouse produces no hot-plug event. Re-probe with backoff until it answers or the dongle leaves.
+    private func scheduleDongleRetry() {
+        guard dongleRetryTask == nil else { return }
+        dongleRetryTask = Task { [weak self] in
+            var delay = 2.0
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(delay))
+                guard let self, !Task.isCancelled else { return }
+                let onHID = self.transport.map { $0.kind != .bluetooth } ?? false
+                if onHID || self.hidCandidates.isEmpty { break }
+                await self.evaluateHIDCandidates()
+                delay = min(delay * 1.5, self.transport?.kind == .bluetooth ? 30 : 10)
+            }
+            self?.dongleRetryTask = nil
         }
     }
 

@@ -38,7 +38,9 @@ final class HIDTransport: RazerTransport, @unchecked Sendable {
 
     private func nextTransaction() -> UInt8 {
         // Rotate the transaction id so a stale reply to a previous command can never match.
-        transaction = transaction >= 0x7F ? 0x10 : transaction + 1
+        // Stay within 0x10…0x1F: the dongle treats the top 3 bits as a device slot and answers
+        // anything ≥ 0x20 with status "timeout" without relaying it to the mouse.
+        transaction = transaction >= 0x1F ? 0x10 : transaction + 1
         return transaction
     }
 
