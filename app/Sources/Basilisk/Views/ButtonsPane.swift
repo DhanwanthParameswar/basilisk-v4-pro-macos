@@ -6,6 +6,8 @@ struct ButtonsPane: View {
     @State private var selected: MouseButton? = .back
     @State private var recording: MouseButton?
     @State private var clutchFor: MouseButton?
+    /// Which layer the rows below edit: the normal bindings, or the Hypershift layer.
+    @State private var editingHypershift = false
     /// Rows sliding under the pointer while we scroll to a clicked part must not steal the selection.
     @State private var ignoreRowHoverUntil = Date.distantPast
 
@@ -35,10 +37,23 @@ struct ButtonsPane: View {
                 if !device.supportsFullControl {
                     Section { LimitedConnectionNotice() }
                 }
+                Section {
+                    Picker("Layer", selection: $editingHypershift) {
+                        Text("Normal").tag(false)
+                        Text("Hypershift").tag(true)
+                    }
+                    .pickerStyle(.segmented)
+                } footer: {
+                    if editingHypershift {
+                        Text("These bindings apply while a button set to Razer Hypershift is held — a second layer stored on the mouse. Unmapped buttons do nothing on this layer.")
+                    } else {
+                        Text("Your normal bindings. Switch to Hypershift to set a second layer that’s active while a Hypershift button is held.")
+                    }
+                }
                 ForEach(groups, id: \.0) { group, buttons in
                     Section(group) {
                         ForEach(buttons) { b in
-                            ButtonRow(button: b, isSelected: selected == b,
+                            ButtonRow(button: b, isSelected: selected == b, hypershift: editingHypershift,
                                       onRecord: { recording = b }, onClutch: { clutchFor = b })
                                 .id(b)
                                 .contentShape(Rectangle())
@@ -48,9 +63,12 @@ struct ButtonsPane: View {
                     }
                 }
                 Section {
-                    Button("Restore Factory Assignments", role: .destructive) {
-                        for b in MouseButton.allCases where b.isRemappable && device.action(for: b) != b.factoryAction {
-                            device.assign(b.factoryAction, to: b)
+                    Button(editingHypershift ? "Clear Hypershift Layer" : "Restore Factory Assignments", role: .destructive) {
+                        for b in MouseButton.allCases where b.isRemappable {
+                            let target: ButtonAction = editingHypershift ? .disabled : b.factoryAction
+                            if device.action(for: b, hypershift: editingHypershift) != target {
+                                device.assign(target, to: b, hypershift: editingHypershift)
+                            }
                         }
                     }
                 } footer: {
@@ -63,13 +81,13 @@ struct ButtonsPane: View {
         .disabled(!device.supportsFullControl)
         .sheet(item: $recording) { b in
             KeyRecorderSheet(button: b) { action in
-                if let action { device.assign(action, to: b) }
+                if let action { device.assign(action, to: b, hypershift: editingHypershift) }
                 recording = nil
             }
         }
         .sheet(item: $clutchFor) { b in
-            ClutchSheet(initial: { if case .dpiClutch(let d) = device.action(for: b) { return d } else { return 400 } }()) { dpi in
-                if let dpi { device.assign(.dpiClutch(dpi), to: b) }
+            ClutchSheet(initial: { if case .dpiClutch(let d) = device.action(for: b, hypershift: editingHypershift) { return d } else { return 400 } }()) { dpi in
+                if let dpi { device.assign(.dpiClutch(dpi), to: b, hypershift: editingHypershift) }
                 clutchFor = nil
             }
         }
@@ -80,16 +98,22 @@ private struct ButtonRow: View {
     @Environment(DeviceManager.self) private var device
     let button: MouseButton
     let isSelected: Bool
+    var hypershift: Bool = false
     let onRecord: () -> Void
     let onClutch: () -> Void
 
+    /// On the Hypershift layer the baseline is "do nothing" rather than the factory action.
+    private var defaultAction: ButtonAction { hypershift ? .disabled : button.factoryAction }
+
     var body: some View {
-        let action = device.action(for: button)
-        let software = device.softwareAction(for: button)
+        let action = device.action(for: button, hypershift: hypershift)
+        let software = device.softwareAction(for: button, hypershift: hypershift)
         LabeledContent {
             if button.isRemappable {
                 Menu(software?.label ?? action.label) {
-                    Button("Default (\(button.factoryAction.label))") { device.assign(button.factoryAction, to: button) }
+                    Button(hypershift ? "Not Mapped" : "Default (\(button.factoryAction.label))") {
+                        device.assign(defaultAction, to: button, hypershift: hypershift)
+                    }
                     Divider()
                     Section("Mouse") {
                         ForEach([ButtonAction.mouse(1), .mouse(2), .mouse(3), .mouse(4), .mouse(5),
@@ -113,7 +137,7 @@ private struct ButtonRow: View {
                             ForEach(SystemAction.allCases) { sa in
                                 Toggle(sa.label, isOn: Binding(
                                     get: { action == sa.action && software == nil },
-                                    set: { if $0 { device.assign(sa.action, to: button) } }))
+                                    set: { if $0 { device.assign(sa.action, to: button, hypershift: hypershift) } }))
                             }
                         }
                     }
@@ -122,7 +146,7 @@ private struct ButtonRow: View {
                             ForEach(SoftwareAction.allCases) { sa in
                                 Toggle(sa.label, isOn: Binding(
                                     get: { software == sa },
-                                    set: { if $0 { device.assignSoftware(sa, to: button) } }))
+                                    set: { if $0 { device.assignSoftware(sa, to: button, hypershift: hypershift) } }))
                             }
                         }
                     }
@@ -138,7 +162,7 @@ private struct ButtonRow: View {
                         }
                     }
                     Button("Keyboard Shortcut…", action: onRecord)
-                    Button("Disable Button") { device.assign(.disabled, to: button) }
+                    Button("Disable Button") { device.assign(.disabled, to: button, hypershift: hypershift) }
                 }
                 .menuStyle(.borderlessButton)
                 .fixedSize()
@@ -150,7 +174,7 @@ private struct ButtonRow: View {
             HStack(spacing: 8) {
                 Circle().fill(isSelected ? Color.accentColor : .secondary.opacity(0.35)).frame(width: 7, height: 7)
                 Text(button.label)
-                if action != button.factoryAction {
+                if action != defaultAction {
                     Text("Custom").font(.caption2.weight(.medium))
                         .padding(.horizontal, 6).padding(.vertical, 1)
                         .background(Capsule().fill(Color.accentColor.opacity(0.15)))
@@ -161,7 +185,7 @@ private struct ButtonRow: View {
     }
 
     private func pick(_ a: ButtonAction, current: ButtonAction) -> some View {
-        Toggle(a.label, isOn: Binding(get: { current == a }, set: { if $0 { device.assign(a, to: button) } }))
+        Toggle(a.label, isOn: Binding(get: { current == a }, set: { if $0 { device.assign(a, to: button, hypershift: hypershift) } }))
     }
 }
 

@@ -55,8 +55,9 @@ final class DeviceManager {
     var sleepMinutes = 5
     var lowPowerPercent = 30
 
-    // Buttons
+    // Buttons — the normal layer, and the Hypershift layer (active while a Hypershift button is held).
     var assignments: [MouseButton: ButtonAction] = [:]
+    var hypershiftAssignments: [MouseButton: ButtonAction] = [:]
 
     // Onboard memory. Per-profile settings (DPI, polling, scroll wheel, brightness, buttons) are
     // read from and written to the active profile, so the app always edits what the mouse is using.
@@ -288,6 +289,7 @@ final class DeviceManager {
 
         for b in MouseButton.allCases {
             if let r = await read(V4Pro.buttonAssignment(b)), let a = V4Pro.parseAssignment(r) { assignments[b] = a }
+            if let r = await read(V4Pro.buttonAssignment(b, hypershift: true)), let a = V4Pro.parseAssignment(r) { hypershiftAssignments[b] = a }
         }
         await refreshProfiles()
         await refreshLive()
@@ -415,27 +417,37 @@ final class DeviceManager {
     func commitSleep() { write([V4Pro.setSleepTimeout(seconds: sleepMinutes * 60)]) }
     func commitLowPower() { write([V4Pro.setLowPowerThreshold(percent: lowPowerPercent)]) }
 
-    func assign(_ action: ButtonAction, to button: MouseButton) {
+    func assign(_ action: ButtonAction, to button: MouseButton, hypershift: Bool = false) {
         guard button.isRemappable else { return }
-        let old = assignments[button]
-        assignments[button] = action
-        GestureEngine.shared.noteFirmwareAssignment(button: button, profile: activeProfile, action: action)
-        write([V4Pro.setButton(button, action)]) { [weak self] in self?.assignments[button] = old }
+        GestureEngine.shared.noteFirmwareAssignment(button: button, profile: activeProfile, hypershift: hypershift, action: action)
+        if hypershift {
+            let old = hypershiftAssignments[button]
+            hypershiftAssignments[button] = action
+            write([V4Pro.setButton(button, action, hypershift: true)]) { [weak self] in self?.hypershiftAssignments[button] = old }
+        } else {
+            let old = assignments[button]
+            assignments[button] = action
+            write([V4Pro.setButton(button, action)]) { [weak self] in self?.assignments[button] = old }
+        }
     }
 
     /// Binds a button to an app-side action: a sentinel is written to firmware and the
     /// running app performs the real action when that sentinel fires. Not stored on the mouse.
-    func assignSoftware(_ sa: SoftwareAction, to button: MouseButton) {
+    func assignSoftware(_ sa: SoftwareAction, to button: MouseButton, hypershift: Bool = false) {
         guard button.isRemappable else { return }
-        let sentinel = GestureEngine.shared.bind(sa, button: button, profile: activeProfile)
-        assign(.key(modifiers: GestureEngine.hyperModifiers, usage: sentinel), to: button)
+        let sentinel = GestureEngine.shared.bind(sa, button: button, profile: activeProfile, hypershift: hypershift)
+        assign(.key(modifiers: GestureEngine.hyperModifiers, usage: sentinel), to: button, hypershift: hypershift)
     }
 
-    func action(for b: MouseButton) -> ButtonAction { assignments[b] ?? b.factoryAction }
+    /// The action on a button, in the normal layer or (holding Hypershift) the Hypershift layer.
+    /// Hypershift defaults to disabled — holding Hypershift does nothing until you map it.
+    func action(for b: MouseButton, hypershift: Bool = false) -> ButtonAction {
+        hypershift ? (hypershiftAssignments[b] ?? .disabled) : (assignments[b] ?? b.factoryAction)
+    }
 
     /// The app-side action bound to a button, if its firmware value is one of our sentinel combos.
-    func softwareAction(for b: MouseButton) -> SoftwareAction? {
-        guard case .key(let m, let u) = action(for: b), m == GestureEngine.hyperModifiers else { return nil }
+    func softwareAction(for b: MouseButton, hypershift: Bool = false) -> SoftwareAction? {
+        guard case .key(let m, let u) = action(for: b, hypershift: hypershift), m == GestureEngine.hyperModifiers else { return nil }
         return GestureEngine.shared.action(forSentinel: u)
     }
 

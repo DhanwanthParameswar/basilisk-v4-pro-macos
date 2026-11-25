@@ -28,7 +28,7 @@ func blog(_ message: String) {
 
 /// A runtime action performed by the app rather than stored on the mouse.
 enum SoftwareAction: String, CaseIterable, Identifiable, Codable {
-    // Phase A — robust (CoreDock / posted keystrokes)
+    // Robust (CoreDock / posted keystrokes)
     case missionControl, appExpose, showDesktop, launchpad, spaceLeft, spaceRight
 
     var id: String { rawValue }
@@ -168,12 +168,14 @@ final class GestureEngine {
 
     // MARK: Bindings
 
-    private func key(_ button: MouseButton, _ profile: UInt8) -> String { "\(profile)-\(button.rawValue)" }
+    private func key(_ button: MouseButton, _ profile: UInt8, _ hypershift: Bool) -> String {
+        "\(profile)-\(button.rawValue)-\(hypershift ? "h" : "n")"
+    }
 
-    /// Binds a button (in a profile) to a software action and returns the sentinel usage
+    /// Binds a button (in a profile + layer) to a software action and returns the sentinel usage
     /// to write to firmware. Reuses the button's existing sentinel if it had one.
-    func bind(_ action: SoftwareAction, button: MouseButton, profile: UInt8) -> UInt8 {
-        let k = key(button, profile)
+    func bind(_ action: SoftwareAction, button: MouseButton, profile: UInt8, hypershift: Bool) -> UInt8 {
+        let k = key(button, profile, hypershift)
         let reuse = byButton[k]?.sentinel
         let sentinel = (reuse != nil && Self.sentinelPool.contains(reuse!)) ? reuse! : firstFreeSentinel()
         byButton[k] = SentinelBinding(sentinel: sentinel, action: action)
@@ -183,8 +185,8 @@ final class GestureEngine {
     }
 
     /// Clears a button's software binding unless `firmwareAction` is still its sentinel combo.
-    func noteFirmwareAssignment(button: MouseButton, profile: UInt8, action firmwareAction: ButtonAction) {
-        let k = key(button, profile)
+    func noteFirmwareAssignment(button: MouseButton, profile: UInt8, hypershift: Bool, action firmwareAction: ButtonAction) {
+        let k = key(button, profile, hypershift)
         guard let b = byButton[k] else { return }
         if case .key(let m, let u) = firmwareAction, m == Self.hyperModifiers, u == b.sentinel { return }
         byButton[k] = nil
@@ -254,7 +256,7 @@ final class GestureEngine {
         case .launchpad:
             if let send = coreDockSend { send("com.apple.launchpad.toggle" as CFString, 0) }
         case .spaceLeft:  postKey(123, flags: .maskControl)            // ⌃←
-        case .spaceRight: postKey(124, flags: .maskControl)            // ⌃→
+        case .spaceRight: postKey(124, flags: .maskControl)           // ⌃→
         }
     }
 
