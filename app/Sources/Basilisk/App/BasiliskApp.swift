@@ -8,11 +8,20 @@ enum Shared {
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
-        MainActor.assumeIsolated { Shared.device.start() }
+        MainActor.assumeIsolated {
+            Shared.device.start()
+            GestureEngine.shared.requestAccessIfNeeded()
+            GestureEngine.shared.start()
+        }
     }
-    /// Keep running in the menu bar after the window closes (when the extra is shown).
+    /// Keep running in the menu bar after the window closes (when the extra is shown),
+    /// and drop the Dock icon so it lives only in the menu bar until reopened.
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-        !UserDefaults.standard.bool(forKey: "showMenuBarExtra", default: true)
+        let keepAlive = UserDefaults.standard.bool(forKey: "showMenuBarExtra", default: true)
+        if keepAlive {
+            DispatchQueue.main.async { NSApp.setActivationPolicy(.accessory) }
+        }
+        return !keepAlive
     }
 }
 
