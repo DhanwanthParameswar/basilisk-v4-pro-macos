@@ -8,7 +8,11 @@ enum Shared {
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
-        MainActor.assumeIsolated { Shared.device.start() }
+        MainActor.assumeIsolated {
+            Shared.device.start()
+            GestureEngine.shared.requestAccessIfNeeded()
+            GestureEngine.shared.start()
+        }
     }
     /// Keep running in the menu bar after the window closes (when the extra is shown).
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {

@@ -419,10 +419,25 @@ final class DeviceManager {
         guard button.isRemappable else { return }
         let old = assignments[button]
         assignments[button] = action
+        GestureEngine.shared.noteFirmwareAssignment(button: button, profile: activeProfile, action: action)
         write([V4Pro.setButton(button, action)]) { [weak self] in self?.assignments[button] = old }
     }
 
+    /// Binds a button to an app-side action: a sentinel is written to firmware and the
+    /// running app performs the real action when that sentinel fires. Not stored on the mouse.
+    func assignSoftware(_ sa: SoftwareAction, to button: MouseButton) {
+        guard button.isRemappable else { return }
+        let sentinel = GestureEngine.shared.bind(sa, button: button, profile: activeProfile)
+        assign(.key(modifiers: GestureEngine.hyperModifiers, usage: sentinel), to: button)
+    }
+
     func action(for b: MouseButton) -> ButtonAction { assignments[b] ?? b.factoryAction }
+
+    /// The app-side action bound to a button, if its firmware value is one of our sentinel combos.
+    func softwareAction(for b: MouseButton) -> SoftwareAction? {
+        guard case .key(let m, let u) = action(for: b), m == GestureEngine.hyperModifiers else { return nil }
+        return GestureEngine.shared.action(forSentinel: u)
+    }
 
     // MARK: - Onboard memory
 

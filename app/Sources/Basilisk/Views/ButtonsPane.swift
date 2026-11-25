@@ -85,9 +85,10 @@ private struct ButtonRow: View {
 
     var body: some View {
         let action = device.action(for: button)
+        let software = device.softwareAction(for: button)
         LabeledContent {
             if button.isRemappable {
-                Menu(action.label) {
+                Menu(software?.label ?? action.label) {
                     Button("Default (\(button.factoryAction.label))") { device.assign(button.factoryAction, to: button) }
                     Divider()
                     Section("Mouse") {
@@ -111,8 +112,17 @@ private struct ButtonRow: View {
                         Section("Keyboard shortcuts, stored on the mouse") {
                             ForEach(SystemAction.allCases) { sa in
                                 Toggle(sa.label, isOn: Binding(
-                                    get: { action == sa.action },
+                                    get: { action == sa.action && software == nil },
                                     set: { if $0 { device.assign(sa.action, to: button) } }))
+                            }
+                        }
+                    }
+                    Menu("System Gestures") {
+                        Section("Run via the app — needs Accessibility, not stored on the mouse") {
+                            ForEach(SoftwareAction.allCases) { sa in
+                                Toggle(sa.label, isOn: Binding(
+                                    get: { software == sa },
+                                    set: { if $0 { device.assignSoftware(sa, to: button) } }))
                             }
                         }
                     }

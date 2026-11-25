@@ -1,5 +1,6 @@
 import SwiftUI
 import ServiceManagement
+import ApplicationServices
 
 /// Compact controls in the menu bar (window-style MenuBarExtra).
 struct MenuBarContent: View {
@@ -84,9 +85,52 @@ struct SettingsView: View {
             }))
             Text("Your settings live on the mouse itself; Basilisk only needs to run while you change them. Keeping it in the menu bar shows battery and quick controls.")
                 .font(.caption).foregroundStyle(.secondary)
+
+            PermissionsSection()
         }
         .formStyle(.grouped)
         .frame(width: 420)
         .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+/// Lists the system permissions Basilisk uses, live status, and a way to grant them.
+struct PermissionsSection: View {
+    @State private var accessibility = AXIsProcessTrusted()
+    private let poll = Timer.publish(every: 1.5, on: .main, in: .common).autoconnect()
+
+    var body: some View {
+        Section("Permissions") {
+            permissionRow(
+                title: "Accessibility",
+                detail: "Required for System Gestures — button actions macOS has no stored shortcut for, like Mission Control, Launchpad and switching Spaces.",
+                granted: accessibility
+            ) {
+                GestureEngine.shared.requestAccessIfNeeded()
+                NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!)
+            }
+        }
+        .onReceive(poll) { _ in
+            let now = AXIsProcessTrusted()
+            if now != accessibility { accessibility = now }
+            if now { GestureEngine.shared.start() }   // tap installs as soon as access is granted
+        }
+    }
+
+    @ViewBuilder
+    private func permissionRow(title: String, detail: String, granted: Bool, enable: @escaping () -> Void) -> some View {
+        HStack(alignment: .firstTextBaseline) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                Text(detail).font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 12)
+            if granted {
+                Label("Granted", systemImage: "checkmark.seal.fill")
+                    .labelStyle(.titleAndIcon).foregroundStyle(.green).font(.callout)
+            } else {
+                Button("Enable…", action: enable).buttonStyle(.borderedProminent)
+            }
+        }
     }
 }
