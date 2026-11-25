@@ -58,6 +58,7 @@ struct MenuBarContent: View {
             Divider()
             HStack {
                 Button("Open Basilisk") {
+                    NSApp.setActivationPolicy(.regular)   // bring the Dock icon back
                     openWindow(id: "main")
                     NSApp.activate()
                 }
